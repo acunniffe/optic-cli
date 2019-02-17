@@ -7,20 +7,22 @@ const log = debug('developer')
 
 const emptyConfig = '# no actual yaml here'
 const loggingServerConfig = `
-commandToRun: sbt test
-documentationStrategy:
+strategy:
   type: logging
+  commandToRun: sbt test
 api:
+  id: team/id
   paths:
     - /users
 `
 const proxyServerConfig = `
-commandToRun: "npm test"
-documentationStrategy:
+strategy:
   type: proxy
+  commandToRun: "npm test"
   targetHost: localhost
   targetPort: 9000
 api:
+  id: some-api-id
   paths:
     - /users
 `

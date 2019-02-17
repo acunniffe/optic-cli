@@ -13,6 +13,6 @@ describe('credentials:add-token', () => {
     .it('saves the input token', async ctx => {
       log(ctx.stdout)
       expect(ctx.stdout).to.contain('I saved your token')
-      expect(await Credentials.get()).to.equal('secret-token')
+      expect(await new Credentials().get()).to.equal('secret-token')
     })
 })

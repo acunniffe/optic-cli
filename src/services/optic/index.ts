@@ -1,7 +1,5 @@
 import * as requestPromise from 'request-promise-native'
 
-const baseUrl = 'https://api.useoptic.com'
-
 export interface IOpticApiSnapshot {
   snapshot: object
   opticVersion: string
@@ -10,23 +8,41 @@ export interface IOpticApiSnapshot {
   published: boolean
 }
 
-function postJsonWithToken(token: string, url: string, body: object) {
-  const headers = {
-    Authorization: `Bearer ${token}`
-  }
-  require('debug')('developer')(token)
+class JsonHttpClient {
+  private readonly baseUrl: string
 
-  return requestPromise
-    .defaults({baseUrl})
-    .post(url, {headers, body, json: true})
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl
+  }
+
+  postJsonWithToken(token: string, url: string, body: object) {
+    const headers = {
+      Authorization: `Bearer ${token}`
+    }
+
+    return requestPromise
+      .post(url, {
+        baseUrl: this.baseUrl,
+        headers,
+        body,
+        json: true,
+      })
+  }
 }
 
 class OpticService {
-  static saveSnapshot(token: string, projectName: string, snapshot: IOpticApiSnapshot) {
-    return postJsonWithToken(token, `/apis/${projectName}/snapshot`, snapshot)
+  private readonly httpClient: JsonHttpClient
+
+  constructor(baseUrl: string) {
+    this.httpClient = new JsonHttpClient(baseUrl)
+  }
+
+  saveSnapshot(token: string, apiId: string, snapshot: IOpticApiSnapshot) {
+    return this.httpClient.postJsonWithToken(token, `/apis/${apiId}/snapshot`, snapshot)
   }
 }
 
 export {
-  OpticService
+  OpticService,
+  JsonHttpClient
 }

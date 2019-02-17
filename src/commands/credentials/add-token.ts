@@ -16,7 +16,7 @@ export default class CredentialsAddToken extends Command {
 
     //@TODO: verify token against api
 
-    await Credentials.set(token.trim())
+    await new Credentials().set(token.trim())
 
     this.log('Thanks! I saved your token.')
   }

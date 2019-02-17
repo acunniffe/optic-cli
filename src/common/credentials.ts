@@ -1,15 +1,21 @@
 import * as keytar from 'keytar'
 
 const serviceName = 'optic-cli'
-const accountName = 'default'
+const defaultAccountName = 'default'
 
 class Credentials {
-  static set(token: string) {
-    return keytar.setPassword(serviceName, accountName, token)
+  private readonly accountName: string
+
+  constructor(accountName = defaultAccountName) {
+    this.accountName = accountName
   }
 
-  static get() {
-    return keytar.getPassword(serviceName, accountName)
+  set(token: string) {
+    return keytar.setPassword(serviceName, this.accountName, token)
+  }
+
+  get() {
+    return keytar.getPassword(serviceName, this.accountName)
   }
 }
 

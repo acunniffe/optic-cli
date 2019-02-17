@@ -11,12 +11,12 @@ export default class Config extends Command {
 
   async run() {
     this.log(`checking ${process.cwd()}/optic.yml`)
-    const {error} = parseOpticYaml(readOpticYaml())
 
-    if (error) {
-      this.error(error)
-    } else {
+    try {
+      parseOpticYaml(readOpticYaml())
       this.log('Everything looks ok!')
+    } catch (error) {
+      return this.error(error)
     }
   }
 }

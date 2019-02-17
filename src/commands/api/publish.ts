@@ -1,5 +1,4 @@
 import {Command, flags} from '@oclif/command'
-import {ISessionManagerOptions} from '@useoptic/core/build/src/session-manager'
 import {cli} from 'cli-ux'
 // @ts-ignore
 import * as gitState from 'git-state'
@@ -42,8 +41,10 @@ export default class ApiPublish extends Command {
 
     const shouldPublish = !flags.draft
 
-    const {config, error} = parseOpticYaml(readOpticYaml())
-    if (error) {
+    let config
+    try {
+      config = parseOpticYaml(readOpticYaml())
+    } catch (error) {
       return this.error(error)
     }
 
@@ -65,8 +66,8 @@ export default class ApiPublish extends Command {
 
     if (isGitRepository) {
       try {
-        const state = await promisify(cb => gitState.check(cwd, cb))
-        const lastCommitMessage = await promisify(cb => gitState.message(cwd, cb))
+        const state = await promisify<{ branch: string, dirty: number }>(cb => gitState.check(cwd, cb))
+        const lastCommitMessage = await promisify<string>(cb => gitState.message(cwd, cb))
         status.isDirty = state.dirty > 0
         status.message = lastCommitMessage || 'HEAD'
         status.branch = state.branch
@@ -85,20 +86,22 @@ export default class ApiPublish extends Command {
     const snapshot: IOpticApiSnapshot = {
       branch: status.branch,
       commitName: status.message,
-      opticVersion: '???',
+      opticVersion: config.optic.version,
       published: shouldPublish,
       snapshot: observations
     }
     cli.action.start('Uploading...')
-    const token = await Credentials.get()
+    const token = await new Credentials().get()
     if (token === null) {
       return this.error('Please add your Optic access token using credentials:add-token')
     }
     try {
-      await OpticService.saveSnapshot(token, config.name, snapshot)
+      const splitApiId = config.api.id.split('/')
+      const apiId = splitApiId[splitApiId.length - 1]
+      await new OpticService(config.optic.apiBaseUrl).saveSnapshot(token, apiId, snapshot)
       cli.action.stop()
       this.log('Nice! Your API is now online!')
-      await cli.open('https://useoptic.com/')
+      await cli.open(config.optic.baseUrl)
     } catch (error) {
       this.error(error)
     }

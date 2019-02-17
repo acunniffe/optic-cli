@@ -5,11 +5,8 @@ import {SessionManager} from '@useoptic/core'
 import {ObservationsToGraph} from '@useoptic/core/build/src'
 import {ReportBuilder} from '@useoptic/core/build/src/report-builder'
 import {cli} from 'cli-ux'
-import * as debug from 'debug'
 
 import {parseOpticYaml, readOpticYaml, writeOutput} from '../../common/config'
-
-const logCli = debug('optic:cli')
 
 export default class ApiDocument extends Command {
   static description = 'describe the command here'
@@ -19,11 +16,12 @@ export default class ApiDocument extends Command {
   static args = []
 
   async run() {
-    const {config, error} = parseOpticYaml(readOpticYaml())
-    if (error) {
+    let config
+    try {
+      config = parseOpticYaml(readOpticYaml())
+    } catch (error) {
       return this.error(error)
     }
-    this.log(config)
 
     const sessionManager = new SessionManager(config)
     cli.action.start('Collecting API Interactions:')
