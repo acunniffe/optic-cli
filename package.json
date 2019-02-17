@@ -1,16 +1,25 @@
 {
   "name": "@useoptic/cli",
   "description": "API automation for the modern team",
-  "version": "0.1.4",
+  "version": "0.1.4-alpha.0",
   "author": "@useoptic",
   "bin": {
     "optic": "./bin/run"
   },
-  "bugs": "https://github.com/opticdev/optic/issues",
+  "bugs": "https://github.com/opticdev/optic-cli/issues",
   "dependencies": {
     "@oclif/command": "^1.5.10",
     "@oclif/config": "^1.12.6",
     "@oclif/plugin-help": "^2.1.6",
+    "@useoptic/core": "^0.1.3-alpha.4",
+    "cli-ux": "^5.1.0",
+    "debug": "^4.1.1",
+    "git-state": "^4.1.0",
+    "joi": "^14.3.1",
+    "js-yaml": "^3.12.1",
+    "keytar": "^4.4.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
@@ -18,8 +27,13 @@
     "@oclif/test": "^1.2.4",
     "@oclif/tslint": "^3.1.1",
     "@types/chai": "^4.1.7",
+    "@types/debug": "^4.1.1",
+    "@types/joi": "^14.3.1",
+    "@types/js-yaml": "^3.12.0",
     "@types/mocha": "^5.2.6",
     "@types/node": "^10.12.26",
+    "@types/request": "^2.48.1",
+    "@types/request-promise-native": "^1.0.15",
     "chai": "^4.2.0",
     "globby": "^8.0.2",
     "mocha": "^5.2.0",
@@ -37,9 +51,14 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/opticdev/optic",
+  "homepage": "https://github.com/opticdev/optic-cli",
   "keywords": [
-    "oclif"
+    "oclif",
+    "cli",
+    "optic",
+    "api",
+    "oas",
+    "swagger"
   ],
   "license": "MIT",
   "main": "lib/index.js",
@@ -50,7 +69,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "opticdev/optic",
+  "repository": "opticdev/optic-cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",

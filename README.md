@@ -19,7 +19,7 @@ $ npm install -g @useoptic/cli
 $ optic COMMAND
 running command...
 $ optic (-v|--version|version)
-@useoptic/cli/0.1.4 darwin-x64 node-v8.12.0
+@useoptic/cli/0.1.4-alpha.0 darwin-x64 node-v8.12.0
 $ optic --help [COMMAND]
 USAGE
   $ optic COMMAND
@@ -28,28 +28,58 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`optic hello [FILE]`](#optic-hello-file)
+* [`optic api:document`](#optic-apidocument)
+* [`optic api:publish`](#optic-apipublish)
+* [`optic config:check`](#optic-configcheck)
+* [`optic credentials:add-token`](#optic-credentialsadd-token)
 * [`optic help [COMMAND]`](#optic-help-command)
 
-## `optic hello [FILE]`
+## `optic api:document`
 
 describe the command here
 
 ```
 USAGE
-  $ optic hello [FILE]
-
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
-
-EXAMPLE
-  $ optic hello
-  hello world from ./src/hello.ts!
+  $ optic api:document
 ```
 
-_See code: [src/commands/hello.ts](https://github.com/opticdev/optic/blob/v0.1.4/src/commands/hello.ts)_
+_See code: [src/commands/api/document.ts](https://github.com/opticdev/optic-cli/blob/v0.1.4-alpha.0/src/commands/api/document.ts)_
+
+## `optic api:publish`
+
+publish a snapshot of your API to Optic
+
+```
+USAGE
+  $ optic api:publish
+
+OPTIONS
+  -d, --draft
+```
+
+_See code: [src/commands/api/publish.ts](https://github.com/opticdev/optic-cli/blob/v0.1.4-alpha.0/src/commands/api/publish.ts)_
+
+## `optic config:check`
+
+validate your optic.yml
+
+```
+USAGE
+  $ optic config:check
+```
+
+_See code: [src/commands/config/check.ts](https://github.com/opticdev/optic-cli/blob/v0.1.4-alpha.0/src/commands/config/check.ts)_
+
+## `optic credentials:add-token`
+
+describe the command here
+
+```
+USAGE
+  $ optic credentials:add-token
+```
+
+_See code: [src/commands/credentials/add-token.ts](https://github.com/opticdev/optic-cli/blob/v0.1.4-alpha.0/src/commands/credentials/add-token.ts)_
 
 ## `optic help [COMMAND]`
 
