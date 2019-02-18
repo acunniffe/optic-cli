@@ -19,7 +19,7 @@ $ npm install -g @useoptic/cli
 $ optic COMMAND
 running command...
 $ optic (-v|--version|version)
-@useoptic/cli/0.1.4-alpha.0 darwin-x64 node-v8.12.0
+@useoptic/cli/2.0.0 darwin-x64 node-v8.12.0
 $ optic --help [COMMAND]
 USAGE
   $ optic COMMAND
@@ -36,18 +36,18 @@ USAGE
 
 ## `optic api:document`
 
-describe the command here
+document your API contract
 
 ```
 USAGE
   $ optic api:document
 ```
 
-_See code: [src/commands/api/document.ts](https://github.com/opticdev/optic-cli/blob/v0.1.4-alpha.0/src/commands/api/document.ts)_
+_See code: [src/commands/api/document.ts](https://github.com/opticdev/optic-cli/blob/v2.0.0/src/commands/api/document.ts)_
 
 ## `optic api:publish`
 
-publish a snapshot of your API to Optic
+publish your API contract to Optic
 
 ```
 USAGE
@@ -57,7 +57,7 @@ OPTIONS
   -d, --draft
 ```
 
-_See code: [src/commands/api/publish.ts](https://github.com/opticdev/optic-cli/blob/v0.1.4-alpha.0/src/commands/api/publish.ts)_
+_See code: [src/commands/api/publish.ts](https://github.com/opticdev/optic-cli/blob/v2.0.0/src/commands/api/publish.ts)_
 
 ## `optic config:check`
 
@@ -68,18 +68,18 @@ USAGE
   $ optic config:check
 ```
 
-_See code: [src/commands/config/check.ts](https://github.com/opticdev/optic-cli/blob/v0.1.4-alpha.0/src/commands/config/check.ts)_
+_See code: [src/commands/config/check.ts](https://github.com/opticdev/optic-cli/blob/v2.0.0/src/commands/config/check.ts)_
 
 ## `optic credentials:add-token`
 
-describe the command here
+authenticate the CLI
 
 ```
 USAGE
   $ optic credentials:add-token
 ```
 
-_See code: [src/commands/credentials/add-token.ts](https://github.com/opticdev/optic-cli/blob/v0.1.4-alpha.0/src/commands/credentials/add-token.ts)_
+_See code: [src/commands/credentials/add-token.ts](https://github.com/opticdev/optic-cli/blob/v2.0.0/src/commands/credentials/add-token.ts)_
 
 ## `optic help [COMMAND]`
 
