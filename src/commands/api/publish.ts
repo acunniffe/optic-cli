@@ -28,7 +28,7 @@ function promisify<T>(f: (cb: Callback<T>) => any) {
 }
 
 export default class ApiPublish extends Command {
-  static description = 'publish a observations of your API to Optic'
+  static description = 'publish your API contract to Optic'
 
   static flags = {
     draft: flags.boolean({char: 'd'}),
@@ -81,7 +81,7 @@ export default class ApiPublish extends Command {
       return this.error('Sorry, I am not able to publish when there are uncommitted changes. Please commit your changes and try again.')
     }
 
-    this.log(JSON.stringify(status))
+    // this.log(JSON.stringify(status))
 
     const snapshot: IOpticApiSnapshot = {
       branch: status.branch,
