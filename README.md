@@ -19,7 +19,7 @@ $ npm install -g @useoptic/cli
 $ optic COMMAND
 running command...
 $ optic (-v|--version|version)
-@useoptic/cli/2.0.0 darwin-x64 node-v8.12.0
+@useoptic/cli/2.0.1 darwin-x64 node-v8.12.0
 $ optic --help [COMMAND]
 USAGE
   $ optic COMMAND
@@ -43,7 +43,7 @@ USAGE
   $ optic api:document
 ```
 
-_See code: [src/commands/api/document.ts](https://github.com/opticdev/optic-cli/blob/v2.0.0/src/commands/api/document.ts)_
+_See code: [src/commands/api/document.ts](https://github.com/opticdev/optic-cli/blob/v2.0.1/src/commands/api/document.ts)_
 
 ## `optic api:publish`
 
@@ -57,7 +57,7 @@ OPTIONS
   -d, --draft
 ```
 
-_See code: [src/commands/api/publish.ts](https://github.com/opticdev/optic-cli/blob/v2.0.0/src/commands/api/publish.ts)_
+_See code: [src/commands/api/publish.ts](https://github.com/opticdev/optic-cli/blob/v2.0.1/src/commands/api/publish.ts)_
 
 ## `optic config:check`
 
@@ -68,7 +68,7 @@ USAGE
   $ optic config:check
 ```
 
-_See code: [src/commands/config/check.ts](https://github.com/opticdev/optic-cli/blob/v2.0.0/src/commands/config/check.ts)_
+_See code: [src/commands/config/check.ts](https://github.com/opticdev/optic-cli/blob/v2.0.1/src/commands/config/check.ts)_
 
 ## `optic credentials:add-token`
 
@@ -79,7 +79,7 @@ USAGE
   $ optic credentials:add-token
 ```
 
-_See code: [src/commands/credentials/add-token.ts](https://github.com/opticdev/optic-cli/blob/v2.0.0/src/commands/credentials/add-token.ts)_
+_See code: [src/commands/credentials/add-token.ts](https://github.com/opticdev/optic-cli/blob/v2.0.1/src/commands/credentials/add-token.ts)_
 
 ## `optic help [COMMAND]`
 
