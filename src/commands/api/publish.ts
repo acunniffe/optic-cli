@@ -28,7 +28,7 @@ function promisify<T>(f: (cb: Callback<T>) => any) {
 }
 
 export default class ApiPublish extends Command {
-  static description = 'publish a snapshot of your API to Optic'
+  static description = 'publish a observations of your API to Optic'
 
   static flags = {
     draft: flags.boolean({char: 'd'}),
@@ -88,7 +88,7 @@ export default class ApiPublish extends Command {
       commitName: status.message,
       opticVersion: config.optic.version,
       published: shouldPublish,
-      snapshot: observations
+      observations
     }
     cli.action.start('Uploading...')
     const token = await new Credentials().get()
@@ -98,10 +98,11 @@ export default class ApiPublish extends Command {
     try {
       const splitApiId = config.api.id.split('/')
       const apiId = splitApiId[splitApiId.length - 1]
-      await new OpticService(config.optic.apiBaseUrl).saveSnapshot(token, apiId, snapshot)
+      const teamId = (splitApiId.length === 2) ? splitApiId[0] : undefined
+      await new OpticService(config.optic.apiBaseUrl).saveSnapshot(token, snapshot, apiId, teamId)
       cli.action.stop()
-      this.log('Nice! Your API is now online!')
-      await cli.open(config.optic.baseUrl)
+      this.log('Upload complete! Opening your API Documentation on ' + config.optic.baseUrl)
+      await cli.open(`${config.optic.baseUrl}apis/${apiId}`)
     } catch (error) {
       this.error(error)
     }
