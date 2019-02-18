@@ -4,7 +4,7 @@ import {cli} from 'cli-ux'
 import {Credentials} from '../../common/credentials'
 
 export default class CredentialsAddToken extends Command {
-  static description = 'describe the command here'
+  static description = 'authenticate the CLI'
 
   static flags = {}
 
@@ -12,7 +12,7 @@ export default class CredentialsAddToken extends Command {
 
   async run() {
     //@TODO: there's a bug with stdin when testing the transitive dependency used in cli.prompt(x, {type: 'hide' | 'mask'}) but that might be preferable to showing the token. If so, skip the test
-    const token: string = await cli.prompt('What is your Optic API token?')
+    const token: string = await cli.prompt('Please provide an Optic API token: https://app.useoptic.com/account ')
 
     //@TODO: verify token against api
 

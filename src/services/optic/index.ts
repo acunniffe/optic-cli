@@ -1,7 +1,7 @@
 import * as requestPromise from 'request-promise-native'
 
 export interface IOpticApiSnapshot {
-  snapshot: object
+  observations: object
   opticVersion: string
   branch: string
   commitName: string
@@ -37,8 +37,12 @@ class OpticService {
     this.httpClient = new JsonHttpClient(baseUrl)
   }
 
-  saveSnapshot(token: string, apiId: string, snapshot: IOpticApiSnapshot) {
-    return this.httpClient.postJsonWithToken(token, `/apis/${apiId}/snapshot`, snapshot)
+  saveSnapshot(token: string, snapshot: IOpticApiSnapshot, apiId: string, teamId?: string) {
+    if (teamId) {
+      return this.httpClient.postJsonWithToken(token, `teams/${teamId}/apis/${apiId}/snapshots`, snapshot)
+    } else {
+      return this.httpClient.postJsonWithToken(token, `self/apis/${apiId}/snapshots`, snapshot)
+    }
   }
 }
 

@@ -9,7 +9,7 @@ import {cli} from 'cli-ux'
 import {parseOpticYaml, readOpticYaml, writeOutput} from '../../common/config'
 
 export default class ApiDocument extends Command {
-  static description = 'describe the command here'
+  static description = 'document your API contract'
 
   static flags = {}
 
@@ -24,15 +24,15 @@ export default class ApiDocument extends Command {
     }
 
     const sessionManager = new SessionManager(config)
-    cli.action.start('Collecting API Interactions:')
+    cli.action.start('Observing API Behavior:')
     const successful = await sessionManager.run()
     cli.action.stop('Analyzing...')
     let shouldBuildReport = true
     if (!successful) {
       if (sessionManager.samples.length === 0) {
-        return this.error('The command was not successful :( I did not see any API interactions either. Please make sure you are sending requests to the Optic Proxy or Logging Server.')
+        return this.error('The test command was not successful and I did not see any API interactions. Please make sure you are sending requests to the Optic Proxy or Logging Server. https://docs.useoptic.com/#/setup/testing-guidelines')
       }
-      shouldBuildReport = await cli.confirm('The command was not successful :( Continue anyway?')
+      shouldBuildReport = await cli.confirm('The test command was not successful :( Continue anyway?')
     }
 
     if (!shouldBuildReport) {
