@@ -99,10 +99,15 @@ export default class ApiPublish extends Command {
       const splitApiId = config.api.id.split('/')
       const apiId = splitApiId[splitApiId.length - 1]
       const teamId = (splitApiId.length === 2) ? splitApiId[0] : undefined
-      await new OpticService(config.optic.apiBaseUrl).saveSnapshot(token, snapshot, apiId, teamId)
+      const uploadResult = await new OpticService(config.optic.apiBaseUrl).saveSnapshot(token, snapshot, apiId, teamId)
       cli.action.stop()
       this.log('Upload complete! Opening your API Documentation on ' + config.optic.baseUrl)
-      await cli.open(`${config.optic.baseUrl}apis/${apiId}`)
+      const query = `?branch=${uploadResult.branch}&version=${uploadResult.uuid}`
+      if (teamId) {
+        await cli.open(`${config.optic.baseUrl}apis/${teamId}/${apiId}${query}`)
+      } else {
+        await cli.open(`${config.optic.baseUrl}apis/${apiId}${query}`)
+      }
     } catch (error) {
       this.error(error)
     }
