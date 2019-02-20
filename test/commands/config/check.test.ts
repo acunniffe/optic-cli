@@ -67,7 +67,10 @@ describe('config:check', () => {
     .it('rejects empty config')
 
   test
-    .stub(config, 'readOpticYaml', () => loggingServerConfig)
+    .stub(config, 'readOpticYaml', () => `${loggingServerConfig}
+optic:
+  version: v9000
+`)
     .stdout()
     .command(['config:check'])
     .it('accepts logging server config', ctx => {

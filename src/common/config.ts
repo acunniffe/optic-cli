@@ -10,7 +10,7 @@ export function parseOpticYaml(fileContents: string): IOpticYamlConfig {
     throw new Error(validationResult.error.message)
   }
 
-  return parsed
+  return validationResult.value as IOpticYamlConfig
 }
 
 export function readOpticYaml() {
