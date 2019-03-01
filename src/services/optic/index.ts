@@ -39,9 +39,9 @@ class OpticService {
 
   saveSnapshot(token: string, snapshot: IOpticApiSnapshot, apiId: string, teamId?: string) {
     if (teamId) {
-      return this.httpClient.postJsonWithToken(token, `teams/${teamId}/apis/${apiId}/snapshots`, snapshot)
+      return this.httpClient.postJsonWithToken(token, `/teams/${teamId}/apis/${apiId}/snapshots`, snapshot)
     } else {
-      return this.httpClient.postJsonWithToken(token, `self/apis/${apiId}/snapshots`, snapshot)
+      return this.httpClient.postJsonWithToken(token, `/self/apis/${apiId}/snapshots`, snapshot)
     }
   }
 }

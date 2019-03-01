@@ -90,7 +90,7 @@ export default class ApiPublish extends Command {
       published: shouldPublish,
       observations
     }
-    cli.action.start('Uploading...')
+    cli.action.start('Uploading…')
     const token = await new Credentials().get()
     if (token === null) {
       return this.error('Please add your Optic access token using credentials:add-token')
@@ -102,11 +102,12 @@ export default class ApiPublish extends Command {
       const uploadResult = await new OpticService(config.optic.apiBaseUrl).saveSnapshot(token, snapshot, apiId, teamId)
       cli.action.stop()
       this.log('Upload complete! Opening your API Documentation on ' + config.optic.baseUrl)
+      //@TODO use a proper url joining and query builder...
       const query = `?branch=${uploadResult.branch}&version=${uploadResult.uuid}`
       if (teamId) {
-        await cli.open(`${config.optic.baseUrl}apis/${teamId}/${apiId}${query}`)
+        await cli.open(`${config.optic.baseUrl}/apis/${teamId}/${apiId}${query}`)
       } else {
-        await cli.open(`${config.optic.baseUrl}apis/${apiId}${query}`)
+        await cli.open(`${config.optic.baseUrl}/apis/${apiId}${query}`)
       }
     } catch (error) {
       this.error(error)

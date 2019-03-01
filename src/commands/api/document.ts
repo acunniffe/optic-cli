@@ -26,7 +26,7 @@ export default class ApiDocument extends Command {
     const sessionManager = new SessionManager(config)
     cli.action.start('Observing API Behavior:')
     const successful = await sessionManager.run()
-    cli.action.stop('Analyzing...')
+    cli.action.stop('Analyzing…')
     let shouldBuildReport = true
     if (!successful) {
       if (sessionManager.samples.length === 0) {
@@ -36,10 +36,10 @@ export default class ApiDocument extends Command {
     }
 
     if (!shouldBuildReport) {
-      this.log('ok! exiting...')
+      this.log('ok! exiting…')
       return
     }
-    cli.action.start('Generating reports...')
+    cli.action.start('Generating reports…')
     const report = new ReportBuilder().buildReport(config, sessionManager.samples)
 
     const {messages, observations} = report
