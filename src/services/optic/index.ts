@@ -1,5 +1,5 @@
 // @ts-ignore
-import {Client} from 'api-js-client'
+import {Client} from './Client.js'
 
 export interface IOpticApiSnapshotRequest {
   observations: object
