@@ -19,7 +19,7 @@ $ npm install -g @useoptic/cli
 $ optic COMMAND
 running command...
 $ optic (-v|--version|version)
-@useoptic/cli/2.0.4 darwin-x64 node-v8.12.0
+@useoptic/cli/2.1.0 darwin-x64 node-v8.12.0
 $ optic --help [COMMAND]
 USAGE
   $ optic COMMAND
@@ -28,29 +28,31 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`optic api:add [FILE]`](#optic-apiadd-file)
+* [`optic api:add APIID APIVERSION`](#optic-apiadd-apiid-apiversion)
 * [`optic api:document`](#optic-apidocument)
-* [`optic api:install APIID APIVERSION`](#optic-apiinstall-apiid-apiversion)
+* [`optic api:install`](#optic-apiinstall)
 * [`optic api:publish`](#optic-apipublish)
 * [`optic config:check`](#optic-configcheck)
 * [`optic credentials:add-token`](#optic-credentialsadd-token)
 * [`optic help [COMMAND]`](#optic-help-command)
 
-## `optic api:add [FILE]`
+## `optic api:add APIID APIVERSION`
 
-describe the command here
+Install an Optic API and generate artifacts (Swagger/OAS, SDKs, etc.)
 
 ```
 USAGE
-  $ optic api:add [FILE]
+  $ optic api:add APIID APIVERSION
+
+ARGUMENTS
+  APIID       "team/api" or "api"
+  APIVERSION  the version of "apiId" you want to consume
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -o, --outputDirectory=outputDirectory  directory to output generated artifacts (Swagger/OAS, SDKs, etc.)
 ```
 
-_See code: [src/commands/api/add.ts](https://github.com/opticdev/optic-cli/blob/v2.0.4/src/commands/api/add.ts)_
+_See code: [src/commands/api/add.ts](https://github.com/opticdev/optic-cli/blob/v2.1.0/src/commands/api/add.ts)_
 
 ## `optic api:document`
 
@@ -61,25 +63,21 @@ USAGE
   $ optic api:document
 ```
 
-_See code: [src/commands/api/document.ts](https://github.com/opticdev/optic-cli/blob/v2.0.4/src/commands/api/document.ts)_
+_See code: [src/commands/api/document.ts](https://github.com/opticdev/optic-cli/blob/v2.1.0/src/commands/api/document.ts)_
 
-## `optic api:install APIID APIVERSION`
+## `optic api:install`
 
-Install an Optic API and generate artifacts (Swagger/OAS, SDKs, etc.)
+Generates artifacts (Swagger/OAS, SDKs, etc.) for the APIs that have been added via api:add
 
 ```
 USAGE
-  $ optic api:install APIID APIVERSION
-
-ARGUMENTS
-  APIID       team/api or self/api
-  APIVERSION  version of the Optic API you wish to consume
+  $ optic api:install
 
 OPTIONS
   -o, --outputDirectory=outputDirectory  (required) directory to output generated artifacts (Swagger/OAS, SDKs, etc.)
 ```
 
-_See code: [src/commands/api/install.ts](https://github.com/opticdev/optic-cli/blob/v2.0.4/src/commands/api/install.ts)_
+_See code: [src/commands/api/install.ts](https://github.com/opticdev/optic-cli/blob/v2.1.0/src/commands/api/install.ts)_
 
 ## `optic api:publish`
 
@@ -93,7 +91,7 @@ OPTIONS
   -d, --draft
 ```
 
-_See code: [src/commands/api/publish.ts](https://github.com/opticdev/optic-cli/blob/v2.0.4/src/commands/api/publish.ts)_
+_See code: [src/commands/api/publish.ts](https://github.com/opticdev/optic-cli/blob/v2.1.0/src/commands/api/publish.ts)_
 
 ## `optic config:check`
 
@@ -104,7 +102,7 @@ USAGE
   $ optic config:check
 ```
 
-_See code: [src/commands/config/check.ts](https://github.com/opticdev/optic-cli/blob/v2.0.4/src/commands/config/check.ts)_
+_See code: [src/commands/config/check.ts](https://github.com/opticdev/optic-cli/blob/v2.1.0/src/commands/config/check.ts)_
 
 ## `optic credentials:add-token`
 
@@ -115,7 +113,7 @@ USAGE
   $ optic credentials:add-token
 ```
 
-_See code: [src/commands/credentials/add-token.ts](https://github.com/opticdev/optic-cli/blob/v2.0.4/src/commands/credentials/add-token.ts)_
+_See code: [src/commands/credentials/add-token.ts](https://github.com/opticdev/optic-cli/blob/v2.1.0/src/commands/credentials/add-token.ts)_
 
 ## `optic help [COMMAND]`
 
