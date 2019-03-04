@@ -13,6 +13,20 @@ export function parseOpticYaml(fileContents: string): IOpticYamlConfig {
   return validationResult.value as IOpticYamlConfig
 }
 
+export function parseOpticYamlWithOriginal(fileContents: string): { parsed: IOpticYamlConfig, validated: IOpticYamlConfig } {
+  const parsed = yaml.safeLoad(fileContents) as IOpticYamlConfig
+  const validationResult = validate(parsed)
+  if (validationResult.error) {
+    throw new Error(validationResult.error.message)
+  }
+
+  const validated = validationResult.value as IOpticYamlConfig
+  return {
+    parsed,
+    validated
+  }
+}
+
 export function readOpticYaml() {
   return fs.readFileSync(opticYamlFileName, 'utf8')
 }

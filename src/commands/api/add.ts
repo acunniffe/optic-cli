@@ -3,7 +3,7 @@ import {IOpticApiDependency, IOpticYamlConfig} from '@useoptic/core/build/src/op
 import {cli} from 'cli-ux'
 
 import {generateArtifact, getApiVersion} from '../../common/api'
-import {parseOpticYaml, readOpticYaml, writeOpticYaml} from '../../common/config'
+import {parseOpticYaml, parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
 import {OpticService} from '../../services/optic'
 
@@ -35,12 +35,14 @@ export default class ApiAdd extends Command {
     const {args, flags} = this.parse(ApiAdd)
 
     let config: IOpticYamlConfig
+    let opticYamlContents
     try {
-      config = parseOpticYaml(readOpticYaml())
-    } catch (error) {
-      return this.error(error)
+      opticYamlContents = readOpticYaml()
+    } catch {
+      opticYamlContents = JSON.stringify({dependencies: []})
     }
-
+    const {parsed, validated} = parseOpticYamlWithOriginal(opticYamlContents)
+    config = validated
     const token = await new Credentials().get()
     if (token === null) {
       return this.error('Please add your Optic access token using credentials:add-token')
@@ -55,8 +57,10 @@ export default class ApiAdd extends Command {
     }
 
     // merge into optic.yml
-    let newConfig: IOpticYamlConfig = JSON.parse(JSON.stringify(config))
-    const existingApi = newConfig.dependencies.find((dependency: IOpticApiDependency) => dependency.id === args.apiId)
+    let newConfig: IOpticYamlConfig = JSON.parse(JSON.stringify(parsed))
+    const existingApi = newConfig.dependencies
+      .find((dependency: IOpticApiDependency) => dependency.id === args.apiId)
+
     if (existingApi) {
       existingApi.version = args.apiVersion
     } else {
