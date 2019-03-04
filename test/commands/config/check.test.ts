@@ -12,6 +12,7 @@ strategy:
   commandToRun: sbt test
 api:
   id: team/id
+  version: 9.9.9
   paths:
     - /users
 `
@@ -23,6 +24,7 @@ strategy:
   targetPort: 9000
 api:
   id: some-api-id
+  version: 0.1.0
   paths:
     - /users
 `

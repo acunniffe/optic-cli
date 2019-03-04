@@ -17,6 +17,10 @@ export function readOpticYaml() {
   return fs.readFileSync(opticYamlFileName, 'utf8')
 }
 
+export function writeOpticYaml(config: IOpticYamlConfig) {
+  return fs.writeFileSync(opticYamlFileName, yaml.dump(config))
+}
+
 export function writeOutput(outputFileName: string, contents: string) {
   const outputFolder = './.optic'
   if (!fs.existsSync(outputFolder)) {

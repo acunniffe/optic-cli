@@ -4,9 +4,10 @@ import {cli} from 'cli-ux'
 import * as gitState from 'git-state'
 import * as path from 'path'
 
+import {apiIdToTeamSlugAndApiSlug} from '../../common/api-id'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import {IOpticApiSnapshot, OpticService} from '../../services/optic'
+import {IOpticApiSnapshotRequest, OpticService} from '../../services/optic'
 
 interface IRepositoryState {
   isDirty: boolean
@@ -14,7 +15,7 @@ interface IRepositoryState {
   message: string
 }
 
-type Callback<T> = (error: Error | null, result?: T) => void
+export type Callback<T> = (error: Error | null, result?: T) => void
 
 function promisify<T>(f: (cb: Callback<T>) => any) {
   return new Promise<T>((resolve, reject) => {
@@ -44,6 +45,9 @@ export default class ApiPublish extends Command {
     let config
     try {
       config = parseOpticYaml(readOpticYaml())
+      if (!config.api) {
+        throw new Error('Your optic.yml is missing the api section')
+      }
     } catch (error) {
       return this.error(error)
     }
@@ -78,39 +82,48 @@ export default class ApiPublish extends Command {
     cli.action.stop()
 
     if (shouldPublish && status.isDirty) {
-      return this.error('Sorry, I am not able to publish when there are uncommitted changes. Please commit your changes and try again.')
+      this.warn('There are uncommitted changes. Please make sure this is intended.')
     }
 
     // this.log(JSON.stringify(status))
 
-    const snapshot: IOpticApiSnapshot = {
+    const snapshot: IOpticApiSnapshotRequest = {
       branch: status.branch,
       commitName: status.message,
       opticVersion: config.optic.version,
       published: shouldPublish,
+      version: config.api.version,
       observations
     }
-    cli.action.start('Uploading…')
+    cli.action.start('Uploading')
     const token = await new Credentials().get()
     if (token === null) {
       return this.error('Please add your Optic access token using credentials:add-token')
     }
     try {
-      const splitApiId = config.api.id.split('/')
-      const apiId = splitApiId[splitApiId.length - 1]
-      const teamId = (splitApiId.length === 2) ? splitApiId[0] : undefined
-      const uploadResult = await new OpticService(config.optic.apiBaseUrl).saveSnapshot(token, snapshot, apiId, teamId)
-      cli.action.stop()
-      this.log('Upload complete! Opening your API Documentation on ' + config.optic.baseUrl)
-      //@TODO use a proper url joining and query builder...
-      const query = `?branch=${uploadResult.branch}&version=${uploadResult.uuid}`
-      if (teamId) {
-        await cli.open(`${config.optic.baseUrl}/apis/${teamId}/${apiId}${query}`)
+      const opticService = new OpticService(config.optic.apiBaseUrl, () => ({token}))
+      const {teamSlug, apiSlug} = apiIdToTeamSlugAndApiSlug(config.api.id)
+      let uploadResult
+      if (teamSlug) {
+        uploadResult = await opticService.postTeamApiSnapshotByTeamSlugAndApiSlug(teamSlug, apiSlug, snapshot)
       } else {
-        await cli.open(`${config.optic.baseUrl}/apis/${apiId}${query}`)
+        uploadResult = await opticService.postSelfApiSnapshotByApiSlug(apiSlug, snapshot)
+      }
+      if (uploadResult.statusCode !== 200) {
+        return this.error(uploadResult.body)
+      }
+      cli.action.stop()
+
+      this.log(`Upload complete! Opening your API Documentation on ${config.optic.baseUrl}`)
+      //@TODO use a proper url joining and query builder...
+      const query = `?branch=${uploadResult.body.branch}&version=${uploadResult.body.uuid}`
+      if (teamSlug) {
+        await cli.open(`${config.optic.baseUrl}/apis/${teamSlug}/${apiSlug}${query}`)
+      } else {
+        await cli.open(`${config.optic.baseUrl}/apis/${apiSlug}${query}`)
       }
     } catch (error) {
-      this.error(error)
+      return this.error(error)
     }
   }
 }

@@ -28,11 +28,29 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`optic api:add [FILE]`](#optic-apiadd-file)
 * [`optic api:document`](#optic-apidocument)
+* [`optic api:install APIID APIVERSION`](#optic-apiinstall-apiid-apiversion)
 * [`optic api:publish`](#optic-apipublish)
 * [`optic config:check`](#optic-configcheck)
 * [`optic credentials:add-token`](#optic-credentialsadd-token)
 * [`optic help [COMMAND]`](#optic-help-command)
+
+## `optic api:add [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ optic api:add [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+_See code: [src/commands/api/add.ts](https://github.com/opticdev/optic-cli/blob/v2.0.4/src/commands/api/add.ts)_
 
 ## `optic api:document`
 
@@ -44,6 +62,24 @@ USAGE
 ```
 
 _See code: [src/commands/api/document.ts](https://github.com/opticdev/optic-cli/blob/v2.0.4/src/commands/api/document.ts)_
+
+## `optic api:install APIID APIVERSION`
+
+Install an Optic API and generate artifacts (Swagger/OAS, SDKs, etc.)
+
+```
+USAGE
+  $ optic api:install APIID APIVERSION
+
+ARGUMENTS
+  APIID       team/api or self/api
+  APIVERSION  version of the Optic API you wish to consume
+
+OPTIONS
+  -o, --outputDirectory=outputDirectory  (required) directory to output generated artifacts (Swagger/OAS, SDKs, etc.)
+```
+
+_See code: [src/commands/api/install.ts](https://github.com/opticdev/optic-cli/blob/v2.0.4/src/commands/api/install.ts)_
 
 ## `optic api:publish`
 
