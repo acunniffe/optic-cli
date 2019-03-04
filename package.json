@@ -52,6 +52,7 @@
     "node": ">=8.0.0"
   },
   "files": [
+    "/managed",
     "/bin",
     "/lib",
     "/npm-shrinkwrap.json",
