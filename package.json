@@ -11,7 +11,7 @@
     "@oclif/command": "^1.5.10",
     "@oclif/config": "^1.12.6",
     "@oclif/plugin-help": "^2.1.6",
-    "@useoptic/core": "^0.1.3-alpha.10",
+    "@useoptic/core": "^0.1.3-alpha.18",
     "cli-ux": "^5.1.0",
     "debug": "^4.1.1",
     "git-state": "^4.1.0",
