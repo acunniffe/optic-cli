@@ -12,6 +12,7 @@ strategy:
   commandToRun: sbt test
 api:
   id: team/id
+  version: 9.9.9
   paths:
     - /users
 `
@@ -23,6 +24,7 @@ strategy:
   targetPort: 9000
 api:
   id: some-api-id
+  version: 0.1.0
   paths:
     - /users
 `
@@ -67,7 +69,10 @@ describe('config:check', () => {
     .it('rejects empty config')
 
   test
-    .stub(config, 'readOpticYaml', () => loggingServerConfig)
+    .stub(config, 'readOpticYaml', () => `${loggingServerConfig}
+optic:
+  version: v9000
+`)
     .stdout()
     .command(['config:check'])
     .it('accepts logging server config', ctx => {

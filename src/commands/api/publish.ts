@@ -2,9 +2,8 @@ import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
 // @ts-ignore
 import * as gitState from 'git-state'
-import * as path from 'path'
 
-import {parseOpticYaml, readOpticYaml} from '../../common/config'
+import {parseOpticYaml, readOpticYaml, readOutput} from '../../common/config'
 import {Credentials} from '../../common/credentials'
 import {IOpticApiSnapshot, OpticService} from '../../services/optic'
 
@@ -49,7 +48,13 @@ export default class ApiPublish extends Command {
     }
 
     const cwd = process.cwd()
-    const observations = require(path.join(cwd, '.optic/observations.json'))
+    let observations
+    try {
+      const observationsText = readOutput('observations.json')
+      observations = JSON.parse(observationsText.toString())
+    } catch {
+      return this.error('I couldn\'t find any Optic API documentation. Please make sure you have run api:document before you publish')
+    }
 
     let status: IRepositoryState = {
       isDirty: false,

@@ -17,10 +17,19 @@ export function readOpticYaml() {
   return fs.readFileSync(opticYamlFileName, 'utf8')
 }
 
+export const outputFolder = path.join(process.cwd(), './.optic')
+
 export function writeOutput(outputFileName: string, contents: string) {
-  const outputFolder = './.optic'
   if (!fs.existsSync(outputFolder)) {
     fs.mkdirSync(outputFolder)
   }
   fs.writeFileSync(path.join(outputFolder, outputFileName), contents)
+}
+
+export function readOutput(outputFileName: string) {
+  const outputFilePath = path.join(outputFolder, outputFileName)
+  if (!fs.existsSync(outputFilePath)) {
+    throw new Error(`Could not find the output file ${outputFileName}  in ${outputFolder}`)
+  }
+  return fs.readFileSync(outputFilePath)
 }
