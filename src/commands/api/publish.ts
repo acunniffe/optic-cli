@@ -7,7 +7,7 @@ import * as path from 'path'
 import {apiIdToTeamSlugAndApiSlug} from '../../common/api-id'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import {IOpticApiSnapshotRequest, OpticService} from '../../services/optic'
+import {IOpticApiSnapshotRequest, OpticService} from '../../services/optic-publishing'
 
 interface IRepositoryState {
   isDirty: boolean

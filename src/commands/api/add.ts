@@ -5,7 +5,7 @@ import {cli} from 'cli-ux'
 import {generateArtifact, getApiVersion} from '../../common/api'
 import {parseOpticYaml, parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import {OpticService} from '../../services/optic'
+import {OpticService} from '../../services/optic-publishing'
 
 export default class ApiAdd extends Command {
   static description = 'Install an Optic API and generate artifacts (Swagger/OAS, SDKs, etc.)'
