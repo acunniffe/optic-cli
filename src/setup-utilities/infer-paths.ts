@@ -19,8 +19,6 @@ export const inferPaths = async (config: ISessionManagerOptions) => {
 
   const pathComponents = urlsToPaths.getPaths();
 
-  require('fs').writeFileSync('paths-com.json', JSON.stringify(pathComponents, null, 2));
-
   const paths = [...new Set(
     pathComponents
       .map((components) => {

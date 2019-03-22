@@ -7,7 +7,7 @@ import { verifyTestSetup } from '../../setup-utilities/verify-test-setup'
 import { cli } from 'cli-ux'
 
 export default class Config extends Command {
-  static description = 'guess API paths by running tests'
+  static description = 'detect API paths by running tests'
 
   static flags = {}
 
