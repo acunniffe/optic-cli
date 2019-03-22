@@ -1,5 +1,6 @@
 import { SessionManager } from '@useoptic/core/build/src'
 import * as express from 'express'
+import { inferPaths } from '../../setup-utilities/infer-paths'
 import { verifyTestSetup } from '../../setup-utilities/verify-test-setup'
 // @ts-ignore
 const cors = require('cors')
@@ -51,6 +52,23 @@ export class OpticSetupService {
               socket.emit('test-setup-report', {isValid: valid})
             })
 
+          })
+
+          socket.on('detect-paths', (message: any) => {
+            const config = {
+              strategy: {
+                type: 'logging' as 'logging',
+                commandToRun: message.testCmd
+              },
+              api: {
+                id: 'test/api',
+                paths: []
+              }
+            }
+            inferPaths(config).then(paths => {
+              console.log('\n\n Detected the following paths: '+ paths.join('\n'))
+              socket.emit('detected-paths-report', {paths})
+            })
           })
 
         })
