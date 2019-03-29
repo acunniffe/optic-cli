@@ -1,18 +1,6 @@
 import * as express from 'express'
 // @ts-ignore
 const fp = require('find-free-port')
-const cors = require('cors')
-
-const whitelist = ['http://localhost:3000', 'https://app.useoptic.com']
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
 
 export class TokenListenerService {
   private readonly app = express()
@@ -23,12 +11,10 @@ export class TokenListenerService {
       const tokenPromise = new Promise(((tokenResolve, reject) => {
         fp(this.randomPort(), (err, responsePort: number) => {
           resolve({ tokenPromise, responsePort: responsePort })
-          this.app.post('/token/:token', cors(corsOptions), (req: Request, res: Response) => {
-            res.sendStatus(200)
+          this.app.get('/token/:token', (req: Request, res: Response) => {
+            res.sendFile('complete-with.html', {root: __dirname})
             tokenResolve(req.params.token)
           })
-
-          this.app.options('*', cors())
 
           this.server = this.app.listen(responsePort, () => {
             console.log('Listening for token on '+ responsePort)

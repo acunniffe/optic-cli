@@ -2,6 +2,7 @@ import { SessionManager } from '@useoptic/core/build/src'
 import { ISessionManagerOptions } from '@useoptic/core/build/src/session-manager'
 import { IApiInteraction } from '@useoptic/core/src/common'
 import { UrlsToPaths } from '@useoptic/core/build/src/urls-to-paths'
+
 export const inferPaths = async (config: ISessionManagerOptions) => {
   const urls: string[] = await new Promise<string[]>((resolve, reject) => {
     const sessionManager = new SessionManager(config)

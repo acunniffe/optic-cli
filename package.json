@@ -14,7 +14,6 @@
     "@useoptic/core": "^0.1.4-alpha.1",
     "archy": "^1.0.0",
     "cli-ux": "^5.1.0",
-    "cors": "^2.8.5",
     "debug": "^4.1.1",
     "express": "^4.16.4",
     "find-free-port": "^2.0.0",
@@ -22,9 +21,10 @@
     "git-state": "^4.1.0",
     "js-yaml": "^3.12.1",
     "keytar": "^4.4.0",
-    "socket.io": "^2.2.0",
+    "request-promise-native": "^1.0.7",
     "tslib": "^1.9.3",
-    "unirest": "^0.6.0"
+    "unirest": "^0.6.0",
+    "nice-try": "latest"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.21.0",
