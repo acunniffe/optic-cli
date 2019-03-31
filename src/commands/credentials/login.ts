@@ -40,5 +40,6 @@ export default class Login extends Command {
     tokenService.stop()
 
     this.log('You\'ve been logged in!')
+    process.exit(0)
   }
 }
