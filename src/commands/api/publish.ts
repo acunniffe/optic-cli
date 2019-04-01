@@ -116,11 +116,19 @@ export default class ApiPublish extends Command {
 
       this.log(`Upload complete! Opening your API Documentation on ${config.optic.baseUrl}`)
       //@TODO use a proper url joining and query builder...
-      const query = `?branch=${uploadResult.body.branch}&version=${uploadResult.body.uuid}`
-      if (teamSlug) {
-        await cli.open(`${config.optic.baseUrl}/apis/${teamSlug}/${apiSlug}${query}`)
+      if (shouldPublish) {
+        if (teamSlug) {
+          await cli.open(`${config.optic.baseUrl}/apis/${teamSlug}/${apiSlug}/versions/${config.api.version}`)
+        } else {
+          await cli.open(`${config.optic.baseUrl}/apis/${apiSlug}/versions/${config.api.version}`)
+        }
       } else {
-        await cli.open(`${config.optic.baseUrl}/apis/${apiSlug}${query}`)
+        const snapshotId = uploadResult.body.uuid
+        if (teamSlug) {
+          await cli.open(`${config.optic.baseUrl}/apis/${teamSlug}/${apiSlug}/snapshots/${snapshotId}`)
+        } else {
+          await cli.open(`${config.optic.baseUrl}/apis/${apiSlug}/snapshots/${snapshotId}`)
+        }
       }
     } catch (error) {
       return this.error(error)
