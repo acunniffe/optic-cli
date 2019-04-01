@@ -120,14 +120,14 @@ export default class ApiPublish extends Command {
         if (teamSlug) {
           url = (`${config.optic.baseUrl}/orgs/${teamSlug}/apis/${apiSlug}/versions/${config.api.version}`)
         } else {
-          url = (`${config.optic.baseUrl}/self/apis/${apiSlug}/versions/${config.api.version}`)
+          url = (`${config.optic.baseUrl}/me/apis/${apiSlug}/versions/${config.api.version}`)
         }
       } else {
         const snapshotId = uploadResult.body.uuid
         if (teamSlug) {
           url = (`${config.optic.baseUrl}/orgs/${teamSlug}/apis/${apiSlug}/snapshots/${snapshotId}`)
         } else {
-          url = (`${config.optic.baseUrl}/self/apis/${apiSlug}/snapshots/${snapshotId}`)
+          url = (`${config.optic.baseUrl}/me/apis/${apiSlug}/snapshots/${snapshotId}`)
         }
       }
       cli.log(url)
