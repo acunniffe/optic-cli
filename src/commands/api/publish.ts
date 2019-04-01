@@ -115,20 +115,23 @@ export default class ApiPublish extends Command {
       cli.action.stop()
 
       this.log(`Upload complete! Opening your API Documentation on ${config.optic.baseUrl}`)
+      let url;
       if (shouldPublish) {
         if (teamSlug) {
-          await cli.open(`${config.optic.baseUrl}/teams/${teamSlug}/apis/${apiSlug}/versions/${config.api.version}`)
+          url = (`${config.optic.baseUrl}/teams/${teamSlug}/apis/${apiSlug}/versions/${config.api.version}`)
         } else {
-          await cli.open(`${config.optic.baseUrl}/self/apis/${apiSlug}/versions/${config.api.version}`)
+          url = (`${config.optic.baseUrl}/self/apis/${apiSlug}/versions/${config.api.version}`)
         }
       } else {
         const snapshotId = uploadResult.body.uuid
         if (teamSlug) {
-          await cli.open(`${config.optic.baseUrl}/teams/${teamSlug}/apis/${apiSlug}/snapshots/${snapshotId}`)
+          url = (`${config.optic.baseUrl}/teams/${teamSlug}/apis/${apiSlug}/snapshots/${snapshotId}`)
         } else {
-          await cli.open(`${config.optic.baseUrl}/self/apis/${apiSlug}/snapshots/${snapshotId}`)
+          url = (`${config.optic.baseUrl}/self/apis/${apiSlug}/snapshots/${snapshotId}`)
         }
       }
+      cli.log(url);
+      await cli.open(url);
     } catch (error) {
       return this.error(error)
     }
