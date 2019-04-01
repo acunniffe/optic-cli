@@ -1,27 +1,32 @@
+import {Command} from '@oclif/command'
 import * as express from 'express'
 // @ts-ignore
 const fp = require('find-free-port')
+type TokenSession = {
+  tokenPromise: Promise<string>
+  responsePort: number
+}
 
 export class TokenListenerService {
   private readonly app = express()
   private server: any
 
-  waitForToken() {
-    return new Promise(((resolve, reject) => {
-      const tokenPromise = new Promise(((tokenResolve, reject) => {
-        fp(this.randomPort(), (err, responsePort: number) => {
-          resolve({ tokenPromise, responsePort: responsePort })
-          this.app.get('/token/:token', (req: Request, res: Response) => {
+  waitForToken(cli: Command) {
+    return new Promise<TokenSession>(resolve => {
+      const tokenPromise = new Promise<string>((tokenResolve => {
+        fp(this.randomPort(), (_: any, responsePort: number) => {
+          resolve({tokenPromise, responsePort})
+          this.app.get('/token/:token', (req: express.Request, res: express.Response) => {
             res.sendFile('complete-with.html', {root: __dirname})
             tokenResolve(req.params.token)
           })
 
           this.server = this.app.listen(responsePort, () => {
-            console.log('Listening for token on '+ responsePort)
+            cli.log(`Listening for token on ${responsePort}`)
           })
         })
       }))
-    }))
+    })
   }
 
   stop() {

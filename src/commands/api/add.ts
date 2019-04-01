@@ -3,9 +3,9 @@ import {IOpticApiDependency, IOpticYamlConfig} from '@useoptic/core/build/src/op
 import {cli} from 'cli-ux'
 
 import {generateArtifact, getApiVersion} from '../../common/api'
-import {parseOpticYaml, parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml} from '../../common/config'
+import {parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import {OpticService} from '../../services/optic-publishing'
+import {OpticService} from '../../services/optic'
 
 export default class ApiAdd extends Command {
   static description = 'Install an Optic API and generate artifacts (Swagger/OAS, SDKs, etc.)'

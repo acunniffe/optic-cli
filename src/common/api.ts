@@ -20,7 +20,7 @@ export async function getApiVersion(opticService: any, apiId: string, apiVersion
     snapshotResponse = await opticService.getSelfApiVersionByApiSlugAndVersion(apiSlug, apiVersion)
   }
   if (snapshotResponse.statusCode !== 200) {
-    throw new Error(`Please ensure api "${apiId}" version "${apiVersion}" has been published.`)
+    throw new Error(`Please ensure API "${apiId}" version "${apiVersion}" has been published.`)
   }
   return snapshotResponse
 }
