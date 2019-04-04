@@ -78,7 +78,7 @@ export async function generateArtifact(
 
         const cogentConfig: ICogentEngineConfig = {
           data: {
-            apiSnapshot: snapshotAtVersion.body.snapshot
+            apiSnapshot: snapshotAtVersion.body.gqlResponse.snapshot
           },
           options: {
             outputDirectory,
