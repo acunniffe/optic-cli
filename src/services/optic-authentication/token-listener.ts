@@ -22,7 +22,7 @@ export class TokenListenerService {
           })
 
           this.server = this.app.listen(responsePort, () => {
-            cli.log(`Listening for token on ${responsePort}`)
+            // cli.log(`Listening for token on ${responsePort}`)
           })
         })
       }))

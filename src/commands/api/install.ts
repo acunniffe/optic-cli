@@ -1,44 +1,49 @@
-import {Command, flags} from '@oclif/command'
-import {IOpticYamlConfig} from '@useoptic/core/build/src/optic-config'
-import {cli} from 'cli-ux'
+import { Command, flags } from '@oclif/command'
+import { IOpticYamlConfig } from '@useoptic/core/build/src/optic-config'
+import { cli } from 'cli-ux'
 
-import {generateArtifact} from '../../common/api'
-import {parseOpticYaml, readOpticYaml} from '../../common/config'
-import {Credentials} from '../../common/credentials'
-import {OpticService} from '../../services/optic'
+import { apiIdToName, generateArtifact, generateArtifactService } from '../../common/api'
+import { parseOpticYaml, readOpticYaml } from '../../common/config'
+import { Credentials } from '../../common/credentials'
+import { OpticService } from '../../services/optic'
 
 export default class ApiInstall extends Command {
-  static description = 'Generates artifacts (Swagger/OAS, SDKs, etc.) for the APIs that have been added via api:add'
-
-  static flags = {
-    outputDirectory: flags.string({
-      char: 'o',
-      description: 'directory to output generated artifacts (Swagger/OAS, SDKs, etc.)',
-      required: true
-    }),
-  }
+  static description = 'Generates artifacts defined in your optic.yml file'
 
   static args = []
 
   async run() {
-    const {flags} = this.parse(ApiInstall)
 
-    let config: IOpticYamlConfig
-    try {
-      config = parseOpticYaml(readOpticYaml())
-    } catch (error) {
-      return this.error(error)
-    }
-
+    const config: IOpticYamlConfig = parseOpticYaml(readOpticYaml())
     const token = await new Credentials().get()
     if (token === null) {
-      return this.error('Please add your Optic access token using credentials:add-token')
+      return this.error('Please login to optic using \'optic auth:login\'')
     }
-    const opticService = new OpticService(config.optic.apiBaseUrl, () => ({token}))
-
+    const opticService = new OpticService(config.optic.apiBaseUrl, () => ({ token }))
     cli.action.start('Generating artifacts')
-    await generateArtifact(flags.outputDirectory, opticService, config, this)
-    cli.action.stop()
+
+    const generateDependency = generateArtifactService(opticService, this)
+
+    const finalResults = []
+
+    for (let dependency of config.dependencies) {
+      const result: any = await generateDependency(dependency)
+      if (result && result.error) {
+        finalResults.push({dependency, success: false, error: result.error})
+      } else {
+        finalResults.push({dependency, success: true})
+      }
+    }
+
+    const successes = finalResults.filter(i => i.success)
+    const failures = finalResults.filter(i => !i.success)
+
+    this.log('\n\nDone!')
+    successes.forEach(i => this.log(`[Success] Generated ${i.dependency.cogentId} for ${apiIdToName(i.dependency.api)}@${i.dependency.version}`))
+    failures.forEach(i => this.error(`Failed to generate ${i.dependency.cogentId} for ${apiIdToName(i.dependency.api)}@${i.dependency.version}. Reason: ${i.error}`))
+
+    process.exit(0)
+
   }
 
 }

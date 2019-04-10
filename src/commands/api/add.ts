@@ -1,79 +1,87 @@
 import {Command, flags} from '@oclif/command'
-import {IOpticApiDependency, IOpticYamlConfig} from '@useoptic/core/build/src/optic-config'
+import {IOpticYamlConfig} from '@useoptic/core/build/src/optic-config'
 import {cli} from 'cli-ux'
 
-import {generateArtifact, getApiVersion} from '../../common/api'
 import {parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
 import {OpticService} from '../../services/optic'
 
 export default class ApiAdd extends Command {
-  static description = 'Install an Optic API and generate artifacts (Swagger/OAS, SDKs, etc.)'
+  static description = 'Add API dependencies to your project'
 
   static flags = {
-    outputDirectory: flags.string({
-      char: 'o',
-      description: 'directory to output generated artifacts (Swagger/OAS, SDKs, etc.)',
-      required: false
+    generate: flags.string({
+      char: 'g',
+      multiple: true,
+      description: 'artifacts to generate',
+      required: false,
+    }),
+    version: flags.string({
+      char: 'v',
+      description: 'API version to consume, defaults to "latest"',
+      required: false,
+      default: 'latest'
     }),
   }
 
   static args = [
     {
-      name: 'apiId',
+      name: 'api-id',
       required: true,
-      description: '"team/api" or "api"'
+      description: '"org/api" or "api"'
     },
-    {
-      name: 'apiVersion',
-      required: true,
-      description: 'the version of "apiId" you want to consume'
-    }
   ]
 
   async run() {
     const {args, flags} = this.parse(ApiAdd)
+    const apiId = args['api-id']
+    const version = flags.version
+    const generate = flags.generate || []
 
+    //
     let config: IOpticYamlConfig
     let opticYamlContents
     try {
       opticYamlContents = readOpticYaml()
     } catch {
-      opticYamlContents = JSON.stringify({dependencies: []})
+      opticYamlContents = JSON.stringify({consume: {}})
     }
+
+
     const {parsed, validated} = parseOpticYamlWithOriginal(opticYamlContents)
-    config = validated
-    const token = await new Credentials().get()
-    if (token === null) {
-      return this.error('Please add your Optic access token using credentials:add-token')
-    }
-    const opticService = new OpticService(config.optic.apiBaseUrl, () => ({token}))
+    let newConfig: any = JSON.parse(JSON.stringify(parsed))
 
-    // ensure input was valid
-    try {
-      await getApiVersion(opticService, args.apiId, args.apiVersion)
-    } catch (error) {
-      return this.error(error)
+    //add consume if missing
+    if (!newConfig.consume) {
+      newConfig.consume = {}
     }
 
-    // merge into optic.yml
-    let newConfig: IOpticYamlConfig = JSON.parse(JSON.stringify(parsed))
-    const existingApi = newConfig.dependencies
-      .find((dependency: IOpticApiDependency) => dependency.id === args.apiId)
+    const generateAsObject: any = {}
 
-    if (existingApi) {
-      existingApi.version = args.apiVersion
+    for (let cogentId of generate) {
+      const path = await cli.prompt(`Where do you want to generate '${cogentId}'? (ie src/managed/sdk)`)
+      generateAsObject[cogentId] = path
+    }
+
+    //already in consumes object
+    const manifestEntry = newConfig.consume[apiId]
+    if (manifestEntry) {
+      //update version. don't overwrite pinned version with latest
+      if (version != 'latest') { //
+        manifestEntry.version = version
+      }
+      //put new generate keys onto object
+      manifestEntry.generate = {...manifestEntry.generate, ...generateAsObject}
     } else {
-      newConfig.dependencies.push({id: args.apiId, version: args.apiVersion})
+      //add new entry for api
+      newConfig.consume[apiId] = {
+        version,
+        generate: generateAsObject
+      }
     }
 
     writeOpticYaml(newConfig)
 
-    this.log(`added ${args.apiId}@${args.apiVersion}!`)
-    if (flags.outputDirectory) {
-      cli.action.start('Generating artifacts')
-      await generateArtifact(flags.outputDirectory, opticService, newConfig, this)
-      cli.action.stop()
-    }
+    this.log(`\n\nDependencies have been added to your optic.yml file\n\nRun 'optic api:install' to generate them.`)
   }
 }

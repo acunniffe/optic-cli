@@ -1,27 +1,28 @@
-import {Command} from '@oclif/command'
-import {CogentEngine, FileSystemReconciler} from '@useoptic/core/build/src'
-import {IFileSystemRendererFolder} from '@useoptic/core/build/src/cogent-core/react/file-system-renderer'
-import {ICogentArtifactIdentifier, ICogentEngineConfig} from '@useoptic/core/build/src/cogent-engines/cogent-engine'
-import {IOpticYamlConfig} from '@useoptic/core/build/src/optic-config'
+import { Command } from '@oclif/command'
+import { CogentEngine, FileSystemReconciler } from '@useoptic/core/build/src'
+import { IFileSystemRendererFolder } from '@useoptic/core/build/src/cogent-core/react/file-system-renderer'
+import { ICogentArtifactIdentifier, ICogentEngineConfig } from '@useoptic/core/build/src/cogent-engines/cogent-engine'
+import { IOpticYamlConfig } from '@useoptic/core/build/src/optic-config'
+import { IApiDependencyConfig } from '@useoptic/core/build/src/optic-config/consume-config'
+import { IApiId } from '@useoptic/core/build/src/optic-config/regexes'
 import * as archy from 'archy'
 import * as fs from 'fs-extra'
 import * as path from 'path'
 
-import {Callback} from '../commands/api/publish'
+import { Callback } from '../commands/api/publish'
 
-import {apiIdToTeamSlugAndApiSlug} from './api-id'
+import { apiIdToTeamSlugAndApiSlug } from './api-id'
+import base = Mocha.reporters.base
 
-export async function getApiVersion(opticService: any, apiId: string, apiVersion: string) {
-  const {teamSlug, apiSlug} = apiIdToTeamSlugAndApiSlug(apiId)
+export async function getApiVersion(opticService: any, apiId: IApiId, apiVersion: string) {
+  const { org, id } = apiId
   let snapshotResponse
-  if (teamSlug) {
-    snapshotResponse = await opticService.getTeamApiVersionByTeamSlugAndApiSlugAndVersion(teamSlug, apiSlug, apiVersion)
+  if (org) {
+    snapshotResponse = await opticService.getTeamApiVersionByTeamSlugAndApiSlugAndVersion(org, id, apiVersion)
   } else {
-    snapshotResponse = await opticService.getSelfApiVersionByApiSlugAndVersion(apiSlug, apiVersion)
+    snapshotResponse = await opticService.getSelfApiVersionByApiSlugAndVersion(id, apiVersion)
   }
-  if (snapshotResponse.statusCode !== 200) {
-    throw new Error(`Please ensure API "${apiId}" version "${apiVersion}" has been published.`)
-  }
+
   return snapshotResponse
 }
 
@@ -38,61 +39,68 @@ export function toArchy(folder: IFileSystemRendererFolder) {
     nodes: [
       ...Object.keys(folder.files),
       ...Object.keys(folder.folders)
-        .map(folderName => toArchy(folder.folders[folderName]))
-    ]
+        .map(folderName => toArchy(folder.folders[folderName])),
+    ],
   }
   return root
 }
 
-export async function generateArtifact(
-  outputDirectory: string, opticService: any, opticConfig: IOpticYamlConfig, command: Command
-) {
-  const baseOutputDirectory = path.resolve(process.cwd(), outputDirectory)
+export const apiIdToName = (api: IApiId): string => ((api.org) ? api.org + '/' : '') + api.id
+
+export const generateArtifactService = (opticService: any, command: Command) => async (dependency: IApiDependencyConfig) => {
+
+  const makeError = (error: string) => ({error})
+
+  const baseOutputDirectory = path.resolve(process.cwd(), dependency.outputDirectory)
   fs.ensureDirSync(baseOutputDirectory)
-  return Promise.all(
-    opticConfig.dependencies
-      .map(async dependency => {
-        const {id, version} = dependency
+  fs.emptyDirSync(baseOutputDirectory)
 
-        const snapshotAtVersion = await getApiVersion(opticService, id, version)
+  let snapshotAtVersion
 
-        const callback: Callback<IFileSystemRendererFolder> = (error, result) => {
-          if (error) {
-            return command.error(error)
-          }
-          if (result) {
-            const reconciler = new FileSystemReconciler()
-            reconciler.emit(result, cogentConfig.options)
-            command.log(`\nGenerating ${artifact.id}@${artifact.version} in ${outputDirectory}:`)
-            command.log(archy(toArchy(result)))
-          }
-        }
-        const artifact: ICogentArtifactIdentifier = {
-          id: 'js-api-client',
-          version
-        }
+  try {
+    snapshotAtVersion = await getApiVersion(opticService, dependency.api, dependency.version)
+    if (snapshotAtVersion.statusCode !== 200) {
+      return makeError(`Please ensure API "${apiIdToName(dependency.api)}" version "${dependency.version}" has been published.`)
+    }
+  } catch (e) {
+    return makeError(e.message)
+  }
 
-        const outputDirectory = path.join(baseOutputDirectory, artifact.id)
-        fs.ensureDirSync(outputDirectory)
-        fs.emptyDirSync(outputDirectory)
+  const callback: Callback<IFileSystemRendererFolder> = (error, result) => {
+    if (error) {
+      return makeError(error.message)
+    }
+    if (result) {
+      const reconciler = new FileSystemReconciler()
+      reconciler.emit(result, cogentConfig.options)
+      command.log(`\nGenerating ${artifact.id} in ${baseOutputDirectory}:`)
+      command.log(archy(toArchy(result)))
+      return {
+        fileTree: archy(toArchy(result)),
+        name: `\nGenerated ${artifact.id} in ${baseOutputDirectory}:`,
+      }
+    }
+  }
 
-        const cogentConfig: ICogentEngineConfig = {
-          data: {
-            apiSnapshot: snapshotAtVersion.body.gqlResponse.snapshot
-          },
-          options: {
-            outputDirectory,
-            api: {
-              id,
-              version,
-            },
-            artifact
-          },
-          callback
-        }
+  const artifact: ICogentArtifactIdentifier = {
+    id: dependency.cogentId,
+    version: dependency.version, // temp, eventually will be real version
+  }
+  const cogentConfig: ICogentEngineConfig = {
+    data: {
+      apiSnapshot: snapshotAtVersion.body.gqlResponse.snapshot,
+    },
+    options: {
+      outputDirectory: baseOutputDirectory,
+      api: {
+        id: (dependency.api.org) ? `${dependency.api.org}/${dependency.api.id}` : dependency.api.id,
+        version: dependency.version,
+      },
+      artifact,
+    },
+    callback,
+  }
 
-        const engine = new CogentEngine()
-        engine.run(cogentConfig)
-      })
-  )
+  const engine = new CogentEngine()
+  engine.run(cogentConfig)
 }
