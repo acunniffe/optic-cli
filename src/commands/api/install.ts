@@ -2,7 +2,7 @@ import { Command, flags } from '@oclif/command'
 import { IOpticYamlConfig } from '@useoptic/core/build/src/optic-config'
 import { cli } from 'cli-ux'
 
-import { apiIdToName, generateArtifact, generateArtifactService } from '../../common/api'
+import { apiIdToName, generateArtifactService } from '../../common/api'
 import { parseOpticYaml, readOpticYaml } from '../../common/config'
 import { Credentials } from '../../common/credentials'
 import { OpticService } from '../../services/optic'
