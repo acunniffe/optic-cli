@@ -1,5 +1,0 @@
-consume:
-  optic/optic-backend:
-    version: latest
-    generate:
-      js-client: 'y'
