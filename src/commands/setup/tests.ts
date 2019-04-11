@@ -24,6 +24,7 @@ export default class Tests extends Command {
   async run() {
     const {args} = this.parse(Tests)
 
+    // @ts-ignore
     const yamlDefinedCommand = niceTry(() => parseOpticYaml(readOpticYaml()).document.run_tests)
 
     console.log('in yaml' + yamlDefinedCommand)
