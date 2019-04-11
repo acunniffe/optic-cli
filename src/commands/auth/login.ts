@@ -1,7 +1,6 @@
 import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
 
-import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
 import {TokenListenerService} from '../../services/optic-authentication/token-listener'
 
@@ -17,23 +16,15 @@ export default class Login extends Command {
   async run() {
     const {flags} = this.parse(Login)
 
-    let yamlContents
-    try {
-      yamlContents = readOpticYaml()
-    } catch {
-      yamlContents = JSON.stringify({
-        strategy: {type: 'logging', commandToRun: 'npm'},
-        api: {id: 'none', version: 'abc', paths: []}
-      })
-    }
-
-    const config = parseOpticYaml(yamlContents)
-    const baseUrl = config.optic.baseUrl
+    const baseUrl = 'https://app.useoptic.com'
 
     const tokenService = new TokenListenerService()
     try {
       const {tokenPromise, responsePort} = await tokenService.waitForToken(this)
-      await cli.open(`${flags.host || baseUrl}/clis/${responsePort}/authorization`)
+      const url = `${flags.host || baseUrl}/clis/${responsePort}/authorization`
+      await cli.open(url)
+
+      this.log(`Grant permissions to the CLI by visiting: ${url}`)
 
       const token = await tokenPromise
       await new Credentials().set(token.trim())

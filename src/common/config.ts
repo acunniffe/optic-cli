@@ -1,29 +1,35 @@
-import {IOpticYamlConfig, opticYamlFileName, validate} from '@useoptic/core/build/src/optic-config'
+import {IOpticYamlConfig, parseOpticYaml as internalParse} from '@useoptic/core/build/src/optic-config'
 import * as fs from 'fs'
 import * as yaml from 'js-yaml'
 import * as path from 'path'
 
+const opticYamlFileName = 'optic.yml'
+
 export function parseOpticYaml(fileContents: string): IOpticYamlConfig {
   const parsed = yaml.safeLoad(fileContents) as IOpticYamlConfig
-  const validationResult = validate(parsed)
-  if (validationResult.error) {
-    throw new Error(validationResult.error.message)
+
+  const parseTry = internalParse(parsed)
+
+  if (!parseTry.isSuccess) {
+    throw new Error(parseTry.error)
   }
 
-  return validationResult.value as IOpticYamlConfig
+  return parseTry.config as IOpticYamlConfig
 }
 
-export function parseOpticYamlWithOriginal(fileContents: string): { parsed: IOpticYamlConfig, validated: IOpticYamlConfig } {
-  const parsed = yaml.safeLoad(fileContents) as IOpticYamlConfig
-  const validationResult = validate(parsed)
-  if (validationResult.error) {
-    throw new Error(validationResult.error.message)
+export function parseOpticYamlWithOriginal(fileContents: string): { parsed: any, validated: IOpticYamlConfig } {
+  const parsed = yaml.safeLoad(fileContents) as any
+
+  const parseTry = internalParse(parsed)
+
+  if (!parseTry.isSuccess) {
+    throw new Error(parseTry.error)
   }
 
-  const validated = validationResult.value as IOpticYamlConfig
+  const validated = parseTry.config as IOpticYamlConfig
   return {
     parsed,
-    validated
+    validated,
   }
 }
 
@@ -31,7 +37,7 @@ export function readOpticYaml() {
   return fs.readFileSync(opticYamlFileName, 'utf8')
 }
 
-export function writeOpticYaml(config: IOpticYamlConfig) {
+export function writeOpticYaml(config: any) {
   return fs.writeFileSync(opticYamlFileName, yaml.dump(config))
 }
 

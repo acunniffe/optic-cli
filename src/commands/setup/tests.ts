@@ -1,5 +1,5 @@
 import {Command} from '@oclif/command'
-import {IOpticYamlConfig} from '@useoptic/core/build/src/optic-config'
+import {ISessionManagerOptions} from '@useoptic/core/build/src/session-manager'
 import {cli} from 'cli-ux'
 // @ts-ignore
 import * as niceTry from 'nice-try'
@@ -17,31 +17,42 @@ export default class Tests extends Command {
       name: 'testCmd',
       required: false,
       description: 'the command that runs your tests',
-    }
+    },
   ]
 
   async run() {
     const {args} = this.parse(Tests)
 
-    const config: IOpticYamlConfig = niceTry(() => parseOpticYaml(readOpticYaml())) || {strategy: {type: 'logging'}}
+    // @ts-ignore
+    const yamlDefinedCommand = niceTry(() => parseOpticYaml(readOpticYaml()).document.run_tests)
 
-    if (args.testCmd) { //override the optic.yml
-      config.strategy.commandToRun = args.testCmd
+    this.log('in yaml' + yamlDefinedCommand)
+
+    const command = args.testCmd || yamlDefinedCommand
+
+    const sessionConfig: ISessionManagerOptions = {
+      strategy: {
+        type: 'logging',
+        commandToRun: command,
+      },
+      api: {
+        paths: [],
+      },
     }
 
-    if (!config.strategy.commandToRun) {
-      return this.error('Please specify a command to run your tests. ie. optic setup:tests "npm run tests" ')
+    if (!command) {
+      return this.error('Please specify the command that runs your tests. ie. optic setup:tests "npm run tests" ')
     }
 
-    this.log(`Running command: ${config.strategy.commandToRun} \n\n`)
+    this.log('Running command: ' + command)
 
     cli.action.start('Listening for API interactions in your tests')
-    const isValid = await verifyTestSetup(config)
+    const isValid = await verifyTestSetup(sessionConfig)
     cli.action.stop()
     if (isValid) {
       this.log('\n\nObserved >= 1 API Interactions. Your test setup is valid')
     } else {
-      this.error('\n\nNo API Interactions observed. Make sure you have added Optic to your test fixtures')
+      this.error('No API Interactions observed. Make sure you have added Optic to your test fixtures')
     }
   }
 }

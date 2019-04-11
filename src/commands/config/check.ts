@@ -14,13 +14,7 @@ export default class Config extends Command {
     this.log(`checking ${process.cwd()}/optic.yml`)
 
     try {
-      const config: IOpticYamlConfig = parseOpticYaml(readOpticYaml())
-      if (!config.strategy) {
-        this.log('Your optic.yml is missing the strategy section - you will not be able to run api:document')
-      }
-      if (!config.api) {
-        this.log('Your optic.yml is missing the api section - you will not be able to run api:document or api:publish')
-      }
+      parseOpticYaml(readOpticYaml())
       this.log('Everything looks ok!')
     } catch (error) {
       return this.error(error)

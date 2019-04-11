@@ -1,13 +1,14 @@
 import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
-// @ts-ignore
+// @ts-ignore]
 import * as gitState from 'git-state'
 import * as path from 'path'
 
-import {apiIdToTeamSlugAndApiSlug} from '../../common/api-id'
+import * as pJson from '../../../package.json'
+import {defaultAPM} from '../../api-packages/api-package-manager'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import {IOpticApiSnapshotRequest, OpticService} from '../../services/optic'
+import {IOpticApiSnapshotRequest} from '../../services/optic'
 
 interface IRepositoryState {
   isDirty: boolean
@@ -42,14 +43,10 @@ export default class ApiPublish extends Command {
 
     const shouldPublish = !flags.draft
 
-    let config
-    try {
-      config = parseOpticYaml(readOpticYaml())
-      if (!config.api) {
-        throw new Error('Your optic.yml is missing the api section')
-      }
-    } catch (error) {
-      return this.error(error)
+    let config = parseOpticYaml(readOpticYaml())
+
+    if (!config.document) {
+      throw new Error('You need a \'document\' section in your optic.yml to publish an API. https://docs.useoptic.com')
     }
 
     const cwd = process.cwd()
@@ -58,7 +55,7 @@ export default class ApiPublish extends Command {
     let status: IRepositoryState = {
       isDirty: false,
       branch: 'master',
-      message: 'HEAD'
+      message: 'HEAD',
     }
     cli.action.start('Checking git status')
     let isGitRepository = false
@@ -85,51 +82,50 @@ export default class ApiPublish extends Command {
       this.warn('There are uncommitted changes. Please make sure this is intended.')
     }
 
-    // this.log(JSON.stringify(status))
-
     const snapshot: IOpticApiSnapshotRequest = {
       branch: status.branch,
       commitName: status.message,
-      opticVersion: config.optic.version,
+      opticVersion: pJson.version,
       published: shouldPublish,
-      version: config.api.version,
-      observations
+      version: config.document.version || '0.0.0-alpha',
+      observations,
     }
+
     cli.action.start('Uploading')
     const token = await new Credentials().get()
     if (token === null) {
-      return this.error('Please add your Optic access token using credentials:add-token')
+      return this.error('Not authenticated. Please login to your Optic account by running optic auth:login')
     }
     try {
-      const opticService = new OpticService(config.optic.apiBaseUrl, () => ({token}))
-      const {teamSlug, apiSlug} = apiIdToTeamSlugAndApiSlug(config.api.id)
-      let uploadResult
-      if (teamSlug) {
-        uploadResult = await opticService.postTeamApiSnapshotByTeamSlugAndApiSlug(teamSlug, apiSlug, snapshot)
-      } else {
-        uploadResult = await opticService.postSelfApiSnapshotByApiSlug(apiSlug, snapshot)
+      const opticRegistry = defaultAPM.resolverByName('optic-registry')
+
+      const {org, id} = config.document.api
+
+      const publishResult = await opticRegistry.publish({org, id, snapshot}, token, config.optic.apiBaseUrl)
+
+      if (!publishResult.success) {
+        return this.error(publishResult.error)
       }
-      if (uploadResult.statusCode !== 200) {
-        return this.error(uploadResult.body)
-      }
+
       cli.action.stop()
 
       this.log(`Upload complete! Opening your API Documentation on ${config.optic.baseUrl}`)
       let url
       if (shouldPublish) {
-        if (teamSlug) {
-          url = (`${config.optic.baseUrl}/orgs/${teamSlug}/apis/${apiSlug}/versions/${config.api.version}`)
+        if (org) {
+          url = (`${config.optic.baseUrl}/orgs/${org}/apis/${id}/versions/${config.document.version}`)
         } else {
-          url = (`${config.optic.baseUrl}/me/apis/${apiSlug}/versions/${config.api.version}`)
+          url = (`${config.optic.baseUrl}/me/apis/${id}/versions/${config.document.version}`)
         }
       } else {
-        const snapshotId = uploadResult.body.uuid
-        if (teamSlug) {
-          url = (`${config.optic.baseUrl}/orgs/${teamSlug}/apis/${apiSlug}/snapshots/${snapshotId}`)
+        const snapshotId = publishResult.uploadResult.uuid
+        if (org) {
+          url = (`${config.optic.baseUrl}/orgs/${org}/apis/${id}/snapshots/${snapshotId}`)
         } else {
-          url = (`${config.optic.baseUrl}/me/apis/${apiSlug}/snapshots/${snapshotId}`)
+          url = (`${config.optic.baseUrl}/me/apis/${id}/snapshots/${snapshotId}`)
         }
       }
+
       cli.log(url)
       await cli.open(url)
     } catch (error) {

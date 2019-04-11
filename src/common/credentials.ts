@@ -17,6 +17,10 @@ class Credentials {
   get() {
     return keytar.getPassword(serviceName, this.accountName)
   }
+
+  clear() {
+    return keytar.deletePassword(serviceName, this.accountName)
+  }
 }
 
 export {
