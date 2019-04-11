@@ -38,13 +38,14 @@ export default class Init extends Command {
 
     let testSetupValid = false
     let runOnce = false
-
+    // @ts-ignore
     cli.wait(380)
 
     while (!testSetupValid) {
 
       const message = (!runOnce) ? `\n\nOptic can check if you have installed the Optic documenting library for your API correctly (https://docs.useoptic.com/#/example-fixtures/).\nPress ${colors.bold('enter')} to verify your setup or ${colors.bold('q')} to quit` : `The documenting library is not setup up properly (https://docs.useoptic.com/#/example-fixtures/). \nPress ${colors.bold('enter')} to run again or ${colors.bold('q')} to quit`
 
+      // @ts-ignore
       await cli.anykey(message)
 
       const sessionConfig: ISessionManagerOptions = {

@@ -11,6 +11,8 @@
     "member-ordering": false,
     "ordered-imports": false,
     "no-empty-line-after-opening-brace": false,
-    "no-unused-variable": false
+    "no-unused-variable": false,
+    "no-console": false,
+    "no-floating-promises": false
   }
 }

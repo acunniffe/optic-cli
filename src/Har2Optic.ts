@@ -2,6 +2,8 @@ import {Observation} from '@useoptic/core/build/src/interactions-to-observations
 
 // @ts-ignore
 export function harToObservations(harPath: string): Observation[] {
+  // @ts-ignore
+  console.log(harPath)
   return []
 }
 

@@ -1,5 +1,4 @@
 import {Command, flags} from '@oclif/command'
-import {IOpticYamlConfig} from '@useoptic/core/build/src/optic-config'
 import {cli} from 'cli-ux'
 
 import {parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml} from '../../common/config'

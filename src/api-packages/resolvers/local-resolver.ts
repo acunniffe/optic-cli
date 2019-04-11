@@ -83,7 +83,7 @@ export class LocalResolver implements IApiResolver {
     this._path = registryPath || defaultLocalRegistry
   }
 
-  async lookup(lookupRequest: IResolverReadRequest, credentials?: string, baseUrl?: string): Promise<IResolverReadRequestResult> {
+  async lookup(lookupRequest: IResolverReadRequest, _credentials?: string, _baseUrl?: string): Promise<IResolverReadRequestResult> {
     this.ensureDirectory()
 
     const apiPath = this.apiPath(lookupRequest.id, lookupRequest.version, lookupRequest.org)
@@ -110,7 +110,7 @@ export class LocalResolver implements IApiResolver {
     }
   }
 
-  async publish(request: IResolverPublishRequest, credentials?: string, baseUrl?: string): Promise<IResolverPublishResult> {
+  async publish(request: IResolverPublishRequest, _credentials?: string, _baseUrl?: string): Promise<IResolverPublishResult> {
     this.ensureDirectory()
 
     const apiPath = this.apiPath(request.id, request.snapshot.version, request.org)

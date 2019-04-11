@@ -1,4 +1,4 @@
-import {IOpticApiSnapshotRequest } from '../../services/optic'
+import {IOpticApiSnapshotRequest} from '../../services/optic'
 
 export interface IResolverPublishRequest {
   org?: string
