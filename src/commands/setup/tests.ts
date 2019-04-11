@@ -1,6 +1,5 @@
 import {Command} from '@oclif/command'
-import {IOpticYamlConfig} from '@useoptic/core/build/src/optic-config'
-import { ISessionManagerOptions } from '@useoptic/core/build/src/session-manager'
+import {ISessionManagerOptions} from '@useoptic/core/build/src/session-manager'
 import {cli} from 'cli-ux'
 // @ts-ignore
 import * as niceTry from 'nice-try'
@@ -18,7 +17,7 @@ export default class Tests extends Command {
       name: 'testCmd',
       required: false,
       description: 'the command that runs your tests',
-    }
+    },
   ]
 
   async run() {
@@ -27,20 +26,19 @@ export default class Tests extends Command {
     // @ts-ignore
     const yamlDefinedCommand = niceTry(() => parseOpticYaml(readOpticYaml()).document.run_tests)
 
-    console.log('in yaml' + yamlDefinedCommand)
+    this.log('in yaml' + yamlDefinedCommand)
 
     const command = args.testCmd || yamlDefinedCommand
 
     const sessionConfig: ISessionManagerOptions = {
       strategy: {
         type: 'logging',
-        commandToRun: command
+        commandToRun: command,
       },
       api: {
-        paths: []
-      }
+        paths: [],
+      },
     }
-
 
     if (!command) {
       return this.error('Please specify the command that runs your tests. ie. optic setup:tests "npm run tests" ')

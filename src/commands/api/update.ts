@@ -1,12 +1,11 @@
-import { Command, flags } from '@oclif/command'
-import { IOpticYamlConfig } from '@useoptic/core/build/src/optic-config'
-import { cli } from 'cli-ux'
-import { apiIdToName, getApiVersion } from '../../common/api'
+import {Command} from '@oclif/command'
+import {IOpticYamlConfig} from '@useoptic/core/build/src/optic-config'
+import {cli} from 'cli-ux'
 
-import { parseOpticYaml, parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml } from '../../common/config'
-import { Credentials } from '../../common/credentials'
-import { OpticService } from '../../services/optic'
-import ApiInstall from './install'
+import {apiIdToName, getApiVersion} from '../../common/api'
+import {parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml} from '../../common/config'
+import {Credentials} from '../../common/credentials'
+import {OpticService} from '../../services/optic'
 
 export default class ApiUpdate extends Command {
   static description = 'Checks if any API dependencies need updates'
@@ -16,28 +15,27 @@ export default class ApiUpdate extends Command {
   static args = []
 
   async run() {
-    const { args, flags } = this.parse(ApiUpdate)
-
     let config: IOpticYamlConfig
     let opticYamlContents
     try {
       opticYamlContents = readOpticYaml()
     } catch {
-      opticYamlContents = JSON.stringify({ consume: {} })
+      opticYamlContents = JSON.stringify({consume: {}})
     }
 
-    const { parsed, validated } = parseOpticYamlWithOriginal(opticYamlContents)
+    const {parsed, validated} = parseOpticYamlWithOriginal(opticYamlContents)
     config = validated
     const token = await new Credentials().get()
     if (token === null) {
       return this.error('Please login to optic using \'optic auth:login\'')
     }
-    const opticService = new OpticService(config.optic.apiBaseUrl, () => ({ token }))
+    const opticService = new OpticService(config.optic.apiBaseUrl, () => ({token}))
 
     let newConfig: any = JSON.parse(JSON.stringify(parsed))
     //flatten distinctly
     const currentVersions: any = validated.dependencies
       .reduce((acc, dependency) => {
+        // @ts-ignore
         acc[apiIdToName(dependency.api)] = {
           apiId: dependency.api,
           version: dependency.version,
@@ -45,15 +43,17 @@ export default class ApiUpdate extends Command {
         return acc
       }, {})
 
-
     const toUpdate = []
 
     cli.action.start('Fetching new versions')
 
     for (let api of Object.values(currentVersions)) {
       //still use this and not APM for now since locals shouldn't overwrite
+      // @ts-ignore
       const apiVersion = await getApiVersion(opticService, api.apiId, 'latest')
+      // @ts-ignore
       if (apiVersion.statusCode === 200 && apiVersion.body.info.version !== api.version) {
+        // @ts-ignore
         toUpdate.push({api: api.apiId, currentVersion: api.version, latestVersion: apiVersion.body.info.version})
       }
     }

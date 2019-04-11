@@ -3,14 +3,14 @@ process.env.DEBUG = process.env.DEBUG ? `${process.env.DEBUG},optic:*` : 'optic:
 import {Command} from '@oclif/command'
 import {SessionManager} from '@useoptic/core'
 import {ObservationsToGraph} from '@useoptic/core/build/src'
-import { Observation } from '@useoptic/core/build/src/interactions-to-observations'
-import { IOpticYamlConfig, toSessionConfig } from '@useoptic/core/build/src/optic-config'
+import {Observation} from '@useoptic/core/build/src/interactions-to-observations'
+import {IOpticYamlConfig, toSessionConfig} from '@useoptic/core/build/src/optic-config'
 import {ReportBuilder} from '@useoptic/core/build/src/report-builder'
-import { ISessionManagerOptions } from '@useoptic/core/build/src/session-manager'
+import {ISessionManagerOptions} from '@useoptic/core/build/src/session-manager'
 import {cli} from 'cli-ux'
 
 import {parseOpticYaml, readOpticYaml, writeOutput} from '../../common/config'
-import { harToObservations } from '../../Har2Optic'
+import {harToObservations} from '../../Har2Optic'
 
 export default class ApiDocument extends Command {
   static description = 'document your API contract'
@@ -26,13 +26,13 @@ export default class ApiDocument extends Command {
     }
 
     const usesRest = !!config.document.run_tests
-    const usesHar  = !!config.document.har
-
+    const usesHar = !!config.document.har
 
     let allObservations: Observation[] = []
 
     if (usesHar) {
-      cli.action.start('Learning from har file '+ config.document.har)
+      cli.action.start(`Learning from har file ${config.document.har}`)
+      // @ts-ignore
       allObservations.concat(harToObservations(config.document.har, config))
     }
 
@@ -58,7 +58,7 @@ export default class ApiDocument extends Command {
       cli.action.start('Generating reports')
       const report = new ReportBuilder().buildReport(sessionConfig, sessionManager.samples)
 
-      const { messages, observations } = report
+      const {messages, observations} = report
       allObservations = allObservations.concat(observations)
       messages.forEach(message => this.log(message))
     }

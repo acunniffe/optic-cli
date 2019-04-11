@@ -1,4 +1,4 @@
-import { IOpticApiSnapshotRequest } from '../../services/optic'
+import {IOpticApiSnapshotRequest } from '../../services/optic'
 
 export interface IResolverPublishRequest {
   org?: string
@@ -26,7 +26,9 @@ export interface IResolverReadRequestResult {
 
 export interface IApiResolver {
   publish(request: IResolverPublishRequest, credentials?: string, baseUrl?: string): Promise<IResolverPublishResult>
+
   lookup(lookupRequest: IResolverReadRequest, credentials?: string, baseUrl?: string): Promise<IResolverReadRequestResult>
+
   isLocal: boolean,
   name: string,
 }

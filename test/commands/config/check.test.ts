@@ -18,11 +18,10 @@ const consumeConfig = `
 consume:
   optic/optic-backend:
     version: 1.0.0
-    generate: 
+    generate:
       js-client: /src/managed
       md-docs: /src/docs
 `
-
 describe('config:check', () => {
   test
     .stub(config, 'readOpticYaml', () => emptyConfig)
@@ -32,8 +31,6 @@ describe('config:check', () => {
 
   test
     .stub(config, 'readOpticYaml', () => `${documentConfig}
-optic:
-  version: v9000
 `)
     .stdout()
     .command(['config:check'])

@@ -1,21 +1,7 @@
-import { Observation } from '@useoptic/core/build/src/interactions-to-observations'
-import { IOpticYamlConfig } from '@useoptic/core/build/src/optic-config'
-import fs from 'fs'
-import * as path from "path"
+import {Observation} from '@useoptic/core/build/src/interactions-to-observations'
 
-export function harToObservations(harPath: string, config: IOpticYamlConfig): Observation[] {
-
-  const jsonHar = path.resolve(process.cwd(), harPath)
-
-  // const IOObserverConfig = {
-  //   pathMatcherList: (niceTry(() => config.document.paths) || []).map(i => pathToMatcher(i)),
-  //   security: config.document.security
-  // };
-
-  // const apiInteractions = collectHostEntries(jsonHar, host).map(i => toAPIInteractions(i));
-  // const observations = InteractionsToObservations.getObservations(apiInteractions, IOObserverConfig);
-
-
+// @ts-ignore
+export function harToObservations(harPath: string): Observation[] {
   return []
 }
 

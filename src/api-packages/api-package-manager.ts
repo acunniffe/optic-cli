@@ -1,13 +1,11 @@
-import { LocalResolver } from './resolvers/local-resolver'
-import { OpticRegistryResolver } from './resolvers/optic-registry-resolver'
+import {LocalResolver} from './resolvers/local-resolver'
+import {OpticRegistryResolver} from './resolvers/optic-registry-resolver'
 import {
   IApiResolver,
-  IResolverPublishRequest, IResolverPublishResult,
   IResolverReadRequest, IResolverReadRequestResult,
 } from './resolvers/resolver-types'
 
 export class ApiPackageManager {
-
   readonly resolvers: IApiResolver[]
 
   constructor(resolvers: IApiResolver[]) {
@@ -15,8 +13,7 @@ export class ApiPackageManager {
   }
 
   async lookup(lookupRequest: IResolverReadRequest, credentials?: string): Promise<IResolverReadRequestResult> {
-
-    let result;
+    let result
 
     for (let resolver of this.resolvers) {
       const found = await resolver.lookup(lookupRequest, credentials)
@@ -47,7 +44,6 @@ export class ApiPackageManager {
     // @ts-ignore
     return this.resolvers.find(i => i.name === name)
   }
-
 
 }
 

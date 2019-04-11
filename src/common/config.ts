@@ -1,4 +1,4 @@
-import {IOpticYamlConfig, IOpticYamlConfigParseTry, parseOpticYaml as internalParse} from '@useoptic/core/build/src/optic-config'
+import {IOpticYamlConfig, parseOpticYaml as internalParse} from '@useoptic/core/build/src/optic-config'
 import * as fs from 'fs'
 import * as yaml from 'js-yaml'
 import * as path from 'path'
@@ -29,7 +29,7 @@ export function parseOpticYamlWithOriginal(fileContents: string): { parsed: any,
   const validated = parseTry.config as IOpticYamlConfig
   return {
     parsed,
-    validated
+    validated,
   }
 }
 

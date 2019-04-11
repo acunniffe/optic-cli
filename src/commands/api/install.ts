@@ -1,11 +1,10 @@
-import { Command, flags } from '@oclif/command'
-import { IOpticYamlConfig } from '@useoptic/core/build/src/optic-config'
-import { cli } from 'cli-ux'
+import {Command} from '@oclif/command'
+import {IOpticYamlConfig} from '@useoptic/core/build/src/optic-config'
+import {cli} from 'cli-ux'
 
-import { apiIdToName, generateArtifactService } from '../../common/api'
-import { parseOpticYaml, readOpticYaml } from '../../common/config'
-import { Credentials } from '../../common/credentials'
-import { OpticService } from '../../services/optic'
+import {apiIdToName, generateArtifactService} from '../../common/api'
+import {parseOpticYaml, readOpticYaml} from '../../common/config'
+import {Credentials} from '../../common/credentials'
 
 export default class ApiInstall extends Command {
   static description = 'Generates artifacts defined in your optic.yml file'
@@ -13,7 +12,6 @@ export default class ApiInstall extends Command {
   static args = []
 
   async run() {
-
     const config: IOpticYamlConfig = parseOpticYaml(readOpticYaml())
     const token = await new Credentials().get()
     if (token === null) {

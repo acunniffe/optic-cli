@@ -14,7 +14,7 @@ export default class Config extends Command {
     this.log(`checking ${process.cwd()}/optic.yml`)
 
     try {
-      const config: IOpticYamlConfig = parseOpticYaml(readOpticYaml())
+      parseOpticYaml(readOpticYaml())
       this.log('Everything looks ok!')
     } catch (error) {
       return this.error(error)

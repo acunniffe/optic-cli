@@ -1,22 +1,18 @@
-import { Command } from '@oclif/command'
-import { CogentEngine, FileSystemReconciler } from '@useoptic/core/build/src'
-import { IFileSystemRendererFolder } from '@useoptic/core/build/src/cogent-core/react/file-system-renderer'
-import { ICogentArtifactIdentifier, ICogentEngineConfig } from '@useoptic/core/build/src/cogent-engines/cogent-engine'
-import { IOpticYamlConfig } from '@useoptic/core/build/src/optic-config'
-import { IApiDependencyConfig } from '@useoptic/core/build/src/optic-config/consume-config'
-import { IApiId } from '@useoptic/core/build/src/optic-config/regexes'
+import {Command} from '@oclif/command'
+import {CogentEngine, FileSystemReconciler} from '@useoptic/core/build/src'
+import {IFileSystemRendererFolder} from '@useoptic/core/build/src/cogent-core/react/file-system-renderer'
+import {ICogentArtifactIdentifier, ICogentEngineConfig} from '@useoptic/core/build/src/cogent-engines/cogent-engine'
+import {IApiDependencyConfig} from '@useoptic/core/build/src/optic-config/consume-config'
+import {IApiId} from '@useoptic/core/build/src/optic-config/regexes'
 import * as archy from 'archy'
 import * as fs from 'fs-extra'
 import * as path from 'path'
-import { defaultAPM } from '../api-packages/api-package-manager'
 
-import { Callback } from '../commands/api/publish'
-
-import { apiIdToTeamSlugAndApiSlug } from './api-id'
-import base = Mocha.reporters.base
+import {defaultAPM} from '../api-packages/api-package-manager'
+import {Callback} from '../commands/api/publish'
 
 export async function getApiVersion(opticService: any, apiId: IApiId, apiVersion: string) {
-  const { org, id } = apiId
+  const {org, id} = apiId
   let snapshotResponse
   if (org) {
     snapshotResponse = await opticService.getTeamApiVersionByTeamSlugAndApiSlugAndVersion(org, id, apiVersion)
@@ -49,7 +45,6 @@ export function toArchy(folder: IFileSystemRendererFolder) {
 export const apiIdToName = (api: IApiId): string => ((api.org) ? api.org + '/' : '') + api.id
 
 export const generateArtifactService = (command: Command, token: string) => async (dependency: IApiDependencyConfig) => {
-
   const makeError = (error: string) => ({error})
 
   const baseOutputDirectory = path.resolve(process.cwd(), dependency.outputDirectory)
@@ -59,7 +54,11 @@ export const generateArtifactService = (command: Command, token: string) => asyn
   let lookupResult
 
   try {
-    lookupResult = await defaultAPM.lookup({org: dependency.api.org, id: dependency.api.id, version: dependency.version}, token)
+    lookupResult = await defaultAPM.lookup({
+      org: dependency.api.org,
+      id: dependency.api.id,
+      version: dependency.version,
+    }, token)
     if (!lookupResult.success) {
       return makeError(lookupResult.error)
     }

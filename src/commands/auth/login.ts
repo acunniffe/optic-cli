@@ -1,7 +1,6 @@
 import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
 
-import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
 import {TokenListenerService} from '../../services/optic-authentication/token-listener'
 

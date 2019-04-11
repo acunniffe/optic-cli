@@ -1,5 +1,6 @@
-import { apiIdToName } from '../../common/api'
-import { OpticService } from '../../services/optic'
+import {apiIdToName} from '../../common/api'
+import {OpticService} from '../../services/optic'
+
 import {
   IApiResolver,
   IResolverPublishRequest, IResolverPublishResult,
@@ -7,15 +8,10 @@ import {
   IResolverReadRequestResult,
 } from './resolver-types'
 
-import * as path from 'path'
-import * as fs from 'fs-extra'
-import undefinedError = Mocha.utils.undefinedError
-// @ts-ignore
-import * as unirest from 'unirest'
-
 export class OpticRegistryResolver implements IApiResolver {
   readonly isLocal: boolean = false
   readonly name: string = 'optic-registry'
+
   async lookup(lookupRequest: IResolverReadRequest, credentials?: string, baseUrl?: string): Promise<IResolverReadRequestResult> {
 
     const opticService = new OpticService(baseUrl || 'https://api.useoptic.com', () => ({token: credentials || ''}))
@@ -28,14 +24,13 @@ export class OpticRegistryResolver implements IApiResolver {
       snapshotResponse = await opticService.getSelfApiVersionByApiSlugAndVersion(id, version)
     }
 
-    console.log(snapshotResponse.statusCode)
-    console.log(snapshotResponse.body)
-
-
     if (snapshotResponse.statusCode === 200) {
       return {success: true, snapshot: snapshotResponse.body.gqlResponse.snapshot}
     } else {
-      return {success: false, error: `Please ensure API "${apiIdToName({org, id})}" version "${version}" has been published.`}
+      return {
+        success: false,
+        error: `Please ensure API "${apiIdToName({org, id})}" version "${version}" has been published.`,
+      }
     }
 
   }
@@ -44,7 +39,7 @@ export class OpticRegistryResolver implements IApiResolver {
 
     const opticService = new OpticService(baseUrl || 'https://api.useoptic.com', () => ({token: credentials || ''}))
 
-    let uploadResult;
+    let uploadResult
     const {org, id} = request
     if (org) {
       uploadResult = await opticService.postTeamApiSnapshotByTeamSlugAndApiSlug(org, id, request.snapshot)

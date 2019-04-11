@@ -3,13 +3,12 @@ import {cli} from 'cli-ux'
 // @ts-ignore]
 import * as gitState from 'git-state'
 import * as path from 'path'
-import * as pJson from '../../../package.json'
-import { defaultAPM } from '../../api-packages/api-package-manager'
 
-import {apiIdToTeamSlugAndApiSlug} from '../../common/api-id'
+import * as pJson from '../../../package.json'
+import {defaultAPM} from '../../api-packages/api-package-manager'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import {IOpticApiSnapshotRequest, OpticService} from '../../services/optic'
+import {IOpticApiSnapshotRequest} from '../../services/optic'
 
 interface IRepositoryState {
   isDirty: boolean
@@ -47,7 +46,7 @@ export default class ApiPublish extends Command {
     let config = parseOpticYaml(readOpticYaml())
 
     if (!config.document) {
-      throw new Error("You need a 'document' section in your optic.yml to publish an API. https://docs.useoptic.com")
+      throw new Error('You need a \'document\' section in your optic.yml to publish an API. https://docs.useoptic.com')
     }
 
     const cwd = process.cwd()
@@ -56,7 +55,7 @@ export default class ApiPublish extends Command {
     let status: IRepositoryState = {
       isDirty: false,
       branch: 'master',
-      message: 'HEAD'
+      message: 'HEAD',
     }
     cli.action.start('Checking git status')
     let isGitRepository = false
@@ -89,7 +88,7 @@ export default class ApiPublish extends Command {
       opticVersion: pJson.version,
       published: shouldPublish,
       version: config.document.version || '0.0.0-alpha',
-      observations
+      observations,
     }
 
     cli.action.start('Uploading')
@@ -98,7 +97,6 @@ export default class ApiPublish extends Command {
       return this.error('Not authenticated. Please login to your Optic account by running optic auth:login')
     }
     try {
-
       const opticRegistry = defaultAPM.resolverByName('optic-registry')
 
       const {org, id} = config.document.api
