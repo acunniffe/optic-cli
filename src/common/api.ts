@@ -8,6 +8,7 @@ import { IApiId } from '@useoptic/core/build/src/optic-config/regexes'
 import * as archy from 'archy'
 import * as fs from 'fs-extra'
 import * as path from 'path'
+import { defaultAPM } from '../api-packages/api-package-manager'
 
 import { Callback } from '../commands/api/publish'
 
@@ -47,7 +48,7 @@ export function toArchy(folder: IFileSystemRendererFolder) {
 
 export const apiIdToName = (api: IApiId): string => ((api.org) ? api.org + '/' : '') + api.id
 
-export const generateArtifactService = (opticService: any, command: Command) => async (dependency: IApiDependencyConfig) => {
+export const generateArtifactService = (command: Command, token: string) => async (dependency: IApiDependencyConfig) => {
 
   const makeError = (error: string) => ({error})
 
@@ -55,12 +56,12 @@ export const generateArtifactService = (opticService: any, command: Command) => 
   fs.ensureDirSync(baseOutputDirectory)
   fs.emptyDirSync(baseOutputDirectory)
 
-  let snapshotAtVersion
+  let lookupResult
 
   try {
-    snapshotAtVersion = await getApiVersion(opticService, dependency.api, dependency.version)
-    if (snapshotAtVersion.statusCode !== 200) {
-      return makeError(`Please ensure API "${apiIdToName(dependency.api)}" version "${dependency.version}" has been published.`)
+    lookupResult = await defaultAPM.lookup({org: dependency.api.org, id: dependency.api.id, version: dependency.version}, token)
+    if (!lookupResult.success) {
+      return makeError(lookupResult.error)
     }
   } catch (e) {
     return makeError(e.message)
@@ -88,7 +89,7 @@ export const generateArtifactService = (opticService: any, command: Command) => 
   }
   const cogentConfig: ICogentEngineConfig = {
     data: {
-      apiSnapshot: snapshotAtVersion.body.gqlResponse.snapshot,
+      apiSnapshot: lookupResult.snapshot,
     },
     options: {
       outputDirectory: baseOutputDirectory,

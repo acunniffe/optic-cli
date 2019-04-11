@@ -51,6 +51,7 @@ export default class ApiUpdate extends Command {
     cli.action.start('Fetching new versions')
 
     for (let api of Object.values(currentVersions)) {
+      //still use this and not APM for now since locals shouldn't overwrite
       const apiVersion = await getApiVersion(opticService, api.apiId, 'latest')
       if (apiVersion.statusCode === 200 && apiVersion.body.info.version !== api.version) {
         toUpdate.push({api: api.apiId, currentVersion: api.version, latestVersion: apiVersion.body.info.version})

@@ -4,6 +4,7 @@ import {cli} from 'cli-ux'
 import * as gitState from 'git-state'
 import * as path from 'path'
 import * as pJson from '../../../package.json'
+import { defaultAPM } from '../../api-packages/api-package-manager'
 
 import {apiIdToTeamSlugAndApiSlug} from '../../common/api-id'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
@@ -97,17 +98,17 @@ export default class ApiPublish extends Command {
       return this.error('Not authenticated. Please login to your Optic account by running optic auth:login')
     }
     try {
-      const opticService = new OpticService(config.optic.apiBaseUrl, () => ({token}))
-      let uploadResult;
+
+      const opticRegistry = defaultAPM.resolverByName('optic-registry')
+
       const {org, id} = config.document.api
-      if (org) {
-        uploadResult = await opticService.postTeamApiSnapshotByTeamSlugAndApiSlug(org, id, snapshot)
-      } else {
-        uploadResult = await opticService.postSelfApiSnapshotByApiSlug(id, snapshot)
+
+      const publishResult = await opticRegistry.publish({org, id, snapshot}, token, config.optic.apiBaseUrl)
+
+      if (!publishResult.success) {
+        return this.error(publishResult.error)
       }
-      if (uploadResult.statusCode !== 200) {
-        return this.error(uploadResult.body)
-      }
+
       cli.action.stop()
 
       this.log(`Upload complete! Opening your API Documentation on ${config.optic.baseUrl}`)
@@ -119,13 +120,14 @@ export default class ApiPublish extends Command {
           url = (`${config.optic.baseUrl}/me/apis/${id}/versions/${config.document.version}`)
         }
       } else {
-        const snapshotId = uploadResult.body.uuid
+        const snapshotId = publishResult.uploadResult.uuid
         if (org) {
           url = (`${config.optic.baseUrl}/orgs/${org}/apis/${id}/snapshots/${snapshotId}`)
         } else {
           url = (`${config.optic.baseUrl}/me/apis/${id}/snapshots/${snapshotId}`)
         }
       }
+
       cli.log(url)
       await cli.open(url)
     } catch (error) {

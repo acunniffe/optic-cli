@@ -19,10 +19,9 @@ export default class ApiInstall extends Command {
     if (token === null) {
       return this.error('Please login to optic using \'optic auth:login\'')
     }
-    const opticService = new OpticService(config.optic.apiBaseUrl, () => ({ token }))
     cli.action.start('Generating artifacts')
 
-    const generateDependency = generateArtifactService(opticService, this)
+    const generateDependency = generateArtifactService(this, token)
 
     const finalResults = []
 
