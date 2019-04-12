@@ -11,6 +11,7 @@ import {cli} from 'cli-ux'
 
 import {parseOpticYaml, readOpticYaml, writeOutput} from '../../common/config'
 import {harToObservations} from '../../Har2Optic'
+import { track } from '../../services/analytics/segment'
 
 export default class ApiDocument extends Command {
   static description = 'document your API contract'
@@ -27,6 +28,8 @@ export default class ApiDocument extends Command {
 
     const usesRest = !!config.document.run_tests
     const usesHar = !!config.document.har
+
+    track('Api Document', {usesRest, usesHar})
 
     let allObservations: Observation[] = []
 

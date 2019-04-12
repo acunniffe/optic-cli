@@ -2,6 +2,7 @@ import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
 
 import {Credentials} from '../../common/credentials'
+import { track } from '../../services/analytics/segment'
 import {TokenListenerService} from '../../services/optic-authentication/token-listener'
 
 export default class Login extends Command {
@@ -15,6 +16,7 @@ export default class Login extends Command {
 
   async run() {
     const {flags} = this.parse(Login)
+    track('CLI Login')
 
     const baseUrl = 'https://app.useoptic.com'
 
@@ -26,6 +28,7 @@ export default class Login extends Command {
 
       this.log(`Grant permissions to the CLI by visiting: ${url}`)
 
+      track('CLI Login Success')
       const token = await tokenPromise
       await new Credentials().set(token.trim())
 

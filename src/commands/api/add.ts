@@ -2,6 +2,7 @@ import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
 
 import {parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml} from '../../common/config'
+import { track } from '../../services/analytics/segment'
 
 export default class ApiAdd extends Command {
   static description = 'Add API dependencies to your project'
@@ -35,7 +36,8 @@ export default class ApiAdd extends Command {
     const version = flags.version
     const generate = flags.generate || []
 
-    //
+    track('Api Add')
+
     let opticYamlContents
     try {
       opticYamlContents = readOpticYaml()

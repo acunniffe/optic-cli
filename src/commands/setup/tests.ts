@@ -5,6 +5,7 @@ import {cli} from 'cli-ux'
 import * as niceTry from 'nice-try'
 
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
+import {track} from '../../services/analytics/segment'
 import {verifyTestSetup} from '../../setup-utilities/verify-test-setup'
 
 export default class Tests extends Command {
@@ -48,6 +49,7 @@ export default class Tests extends Command {
 
     cli.action.start('Listening for API interactions in your tests')
     const isValid = await verifyTestSetup(sessionConfig)
+    track('Test Setup', {isValid})
     cli.action.stop()
     if (isValid) {
       this.log('\n\nObserved >= 1 API Interactions. Your test setup is valid')
