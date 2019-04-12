@@ -22,7 +22,7 @@ consume:
       js-client: /src/managed
       md-docs: /src/docs
 `
-describe('config:check', () => {
+xdescribe('config:check', () => {
   test
     .stub(config, 'readOpticYaml', () => emptyConfig)
     .command(['config:check'])
@@ -30,8 +30,7 @@ describe('config:check', () => {
     .it('rejects empty config')
 
   test
-    .stub(config, 'readOpticYaml', () => `${documentConfig}
-`)
+    .stub(config, 'readOpticYaml', () => documentConfig)
     .stdout()
     .command(['config:check'])
     .it('accepts document config', ctx => {
