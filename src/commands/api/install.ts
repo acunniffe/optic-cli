@@ -5,7 +5,7 @@ import {cli} from 'cli-ux'
 import {apiIdToName, generateArtifactService} from '../../common/api'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import { track } from '../../services/analytics/segment'
+import {track} from '../../services/analytics/segment'
 
 export default class ApiInstall extends Command {
   static description = 'Generates artifacts defined in your optic.yml file'

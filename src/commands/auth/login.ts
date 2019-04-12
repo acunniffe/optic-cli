@@ -2,7 +2,7 @@ import {Command, flags} from '@oclif/command'
 import {cli} from 'cli-ux'
 
 import {Credentials} from '../../common/credentials'
-import { track } from '../../services/analytics/segment'
+import {track} from '../../services/analytics/segment'
 import {TokenListenerService} from '../../services/optic-authentication/token-listener'
 
 export default class Login extends Command {

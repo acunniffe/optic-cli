@@ -1,7 +1,7 @@
 import {Command, flags} from '@oclif/command'
 
 import {Credentials} from '../../common/credentials'
-import { track } from '../../services/analytics/segment'
+import {track} from '../../services/analytics/segment'
 
 export default class Login extends Command {
   static description = 'logout from the CLI'

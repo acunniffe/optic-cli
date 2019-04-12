@@ -11,7 +11,7 @@ import {cli} from 'cli-ux'
 
 import {parseOpticYaml, readOpticYaml, writeOutput} from '../../common/config'
 import {harToObservations} from '../../Har2Optic'
-import { track } from '../../services/analytics/segment'
+import {track} from '../../services/analytics/segment'
 
 export default class ApiDocument extends Command {
   static description = 'document your API contract'

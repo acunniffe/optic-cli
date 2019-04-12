@@ -8,7 +8,7 @@ import * as pJson from '../../../package.json'
 import {defaultAPM} from '../../api-packages/api-package-manager'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import { track } from '../../services/analytics/segment'
+import {track} from '../../services/analytics/segment'
 import {IOpticApiSnapshotRequest} from '../../services/optic'
 
 interface IRepositoryState {

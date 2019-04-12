@@ -6,7 +6,7 @@ import * as colors from 'colors/safe'
 import * as path from 'path'
 
 import {writeOpticYaml} from '../../common/config'
-import { track } from '../../services/analytics/segment'
+import {track} from '../../services/analytics/segment'
 import {verifyTestSetup} from '../../setup-utilities/verify-test-setup'
 
 export default class Init extends Command {

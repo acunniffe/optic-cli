@@ -5,7 +5,7 @@ import {cli} from 'cli-ux'
 import * as niceTry from 'nice-try'
 
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
-import { track } from '../../services/analytics/segment'
+import {track} from '../../services/analytics/segment'
 import {inferPaths} from '../../setup-utilities/infer-paths'
 
 export default class Paths extends Command {

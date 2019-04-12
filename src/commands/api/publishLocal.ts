@@ -1,7 +1,7 @@
 import {Command} from '@oclif/command'
 import {defaultAPM} from '../../api-packages/api-package-manager'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
-import { track } from '../../services/analytics/segment'
+import {track} from '../../services/analytics/segment'
 import {IOpticApiSnapshotRequest} from '../../services/optic'
 import * as path from 'path'
 import * as pJson from '../../../package.json'

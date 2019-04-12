@@ -5,7 +5,7 @@ import {cli} from 'cli-ux'
 import {apiIdToName, getApiVersion} from '../../common/api'
 import {parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import { track } from '../../services/analytics/segment'
+import {track} from '../../services/analytics/segment'
 import {OpticService} from '../../services/optic'
 
 export default class ApiUpdate extends Command {
