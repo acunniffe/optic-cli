@@ -5,7 +5,7 @@ import {cli} from 'cli-ux'
 import * as niceTry from 'nice-try'
 
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
-import {track} from '../../services/analytics/segment'
+import analytics from '../../services/analytics/segment'
 import {inferPaths} from '../../setup-utilities/infer-paths'
 
 export default class Paths extends Command {
@@ -51,7 +51,7 @@ export default class Paths extends Command {
     const paths = await inferPaths(sessionConfig)
     cli.action.stop()
 
-    track('Setup Paths', {paths: paths.length})
+    analytics.track('Setup Paths', {paths: paths.length})
     this.log('Detected API Paths. If, correct, include these in your optic.yml file:\n\n')
     this.log(paths.map(i => `  - ${i}`).join('\n'))
 

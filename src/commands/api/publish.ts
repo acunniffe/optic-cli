@@ -8,7 +8,7 @@ import * as pJson from '../../../package.json'
 import {defaultAPM} from '../../api-packages/api-package-manager'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import {track} from '../../services/analytics/segment'
+import analytics from '../../services/analytics/segment'
 import {IOpticApiSnapshotRequest} from '../../services/optic'
 
 interface IRepositoryState {
@@ -50,7 +50,7 @@ export default class ApiPublish extends Command {
       throw new Error('You need a \'document\' section in your optic.yml to publish an API. https://docs.useoptic.com')
     }
 
-    track('Api Publish')
+    analytics.track('Api Publish')
 
     const cwd = process.cwd()
     const observations = require(path.join(cwd, '.optic/observations.json'))

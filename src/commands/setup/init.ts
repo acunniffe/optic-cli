@@ -6,7 +6,7 @@ import * as colors from 'colors/safe'
 import * as path from 'path'
 
 import {writeOpticYaml} from '../../common/config'
-import {track} from '../../services/analytics/segment'
+import analytics from '../../services/analytics/segment'
 import {verifyTestSetup} from '../../setup-utilities/verify-test-setup'
 
 export default class Init extends Command {
@@ -39,7 +39,7 @@ export default class Init extends Command {
       },
     }
 
-    track('Running Init')
+    analytics.track('Running Init')
 
     writeOpticYaml(yaml)
 
@@ -55,7 +55,7 @@ export default class Init extends Command {
 
       const message = (!runOnce) ? `\n\nOptic can check if you have installed the Optic documenting library for your API correctly (https://docs.useoptic.com/#/example-fixtures/).\nPress ${colors.bold('enter')} to verify your setup or ${colors.bold('q')} to quit` : `The documenting library is not setup up properly (https://docs.useoptic.com/#/example-fixtures/). \nPress ${colors.bold('enter')} to run again or ${colors.bold('q')} to quit`
 
-      track('Init Test Verify Loop', {testSetupValid})
+      analytics.track('Init Test Verify Loop', {testSetupValid})
       // @ts-ignore
       await cli.anykey(message)
 

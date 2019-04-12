@@ -1,7 +1,7 @@
 import {Command} from '@oclif/command'
 import {defaultAPM} from '../../api-packages/api-package-manager'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
-import {track} from '../../services/analytics/segment'
+import analytics from '../../services/analytics/segment'
 import {IOpticApiSnapshotRequest} from '../../services/optic'
 import * as path from 'path'
 import * as pJson from '../../../package.json'
@@ -25,7 +25,7 @@ export default class ApiPublish extends Command {
     const cwd = process.cwd()
     const observations = require(path.join(cwd, '.optic/observations.json'))
 
-    track('Api Publish Local')
+    analytics.track('Api Publish Local')
     const snapshot: IOpticApiSnapshotRequest = {
       branch: '',
       commitName: '',

@@ -5,7 +5,7 @@ import {cli} from 'cli-ux'
 import {apiIdToName, getApiVersion} from '../../common/api'
 import {parseOpticYamlWithOriginal, readOpticYaml, writeOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'
-import {track} from '../../services/analytics/segment'
+import analytics from '../../services/analytics/segment'
 import {OpticService} from '../../services/optic'
 
 export default class ApiUpdate extends Command {
@@ -24,7 +24,7 @@ export default class ApiUpdate extends Command {
       opticYamlContents = JSON.stringify({consume: {}})
     }
 
-    track('Api Update')
+    analytics.track('Api Update')
 
     const {parsed, validated} = parseOpticYamlWithOriginal(opticYamlContents)
     config = validated
