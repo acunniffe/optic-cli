@@ -1,4 +1,4 @@
-import {Command} from '@oclif/command'
+import {Command, flags} from '@oclif/command'
 import {ISessionManagerOptions} from '@useoptic/core/build/src/session-manager'
 import {cli} from 'cli-ux'
 // @ts-ignore
@@ -11,15 +11,22 @@ import {verifyTestSetup} from '../../setup-utilities/verify-test-setup'
 export default class Init extends Command {
   static description = 'setup an optic project'
 
-  static flags = {}
+  static flags = {
+    id: flags.string({required: false})
+  }
 
   static args = []
 
   async run() {
+    const {flags} = this.parse(Init)
     this.log(colors.bold('Setup Optic to document your API \n'))
-
     const run_tests = await cli.prompt('the command that runs your tests')
-    const id = await cli.prompt('api name in slug format (ie my-api)')
+    let id: string
+    if (!flags.id) {
+      id = await cli.prompt('api name in slug format (ie my-api)')
+    } else {
+      id = flags.id
+    }
     const version = await cli.prompt('current semantic version of the api (ie 1.0.0)')
 
     const yaml = {
