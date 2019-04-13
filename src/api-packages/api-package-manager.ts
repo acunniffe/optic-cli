@@ -18,7 +18,7 @@ export class ApiPackageManager {
     for (let resolver of this.resolvers) {
       const found = await resolver.lookup(lookupRequest, credentials)
 
-      // console.log(`Result for ${resolver.name} `+ JSON.stringify(found))
+      console.log(`Result for ${resolver.name} `+ JSON.stringify(found))
       if (found.success) {
         result = found.snapshot
         break

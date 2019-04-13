@@ -2,7 +2,7 @@ import * as fs from 'fs-extra'
 import * as path from 'path'
 // @ts-ignore
 import * as unirest from 'unirest'
-
+import {gzip, ungzip} from 'node-gzip'
 import {
   IApiResolver,
   IResolverPublishRequest, IResolverPublishResult,
@@ -89,13 +89,17 @@ export class LocalResolver implements IApiResolver {
     const apiPath = this.apiPath(lookupRequest.id, lookupRequest.version, lookupRequest.org)
 
     if (fs.existsSync(apiPath)) {
+
       const {observations} = JSON.parse(fs.readFileSync(apiPath).toString())
 
-      //@todo -- figure out cert issue so we can use a nicer domain. This currently uses SSL and is safe
+      const compressed = await gzip(JSON.stringify({observations, query: this.gqlQuery}))
+      const requestBody = JSON.stringify({compressed})
+
+      // @todo -- figure out cert issue so we can use a nicer domain. This currently uses SSL and is safe
       const response = await unirest
         .post('https://01w48ovnq4.execute-api.us-east-2.amazonaws.com/production/observations-to-graph')
         .headers('content-type', 'application/json')
-        .send({observations, query: this.gqlQuery})
+        .send(requestBody)
 
       const body = response.body
 
