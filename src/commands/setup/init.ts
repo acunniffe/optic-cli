@@ -13,7 +13,8 @@ export default class Init extends Command {
   static description = 'setup an optic project'
 
   static flags = {
-    id: flags.string({required: false})
+    id: flags.string({required: false}),
+    'verify-tests': flags.boolean({required: false})
   }
 
   static args = []
@@ -46,6 +47,9 @@ export default class Init extends Command {
     this.log(colors.green('\noptic.yml config file created at:'))
     this.log(colors.green(`${path.join(process.cwd(), 'optic.yml')}`))
 
+    if (!flags['verify-tests']) {
+      return process.exit(0)
+    }
     let testSetupValid = false
     let runOnce = false
     // @ts-ignore
@@ -80,7 +84,6 @@ export default class Init extends Command {
       runOnce = true
       testSetupValid = isValid
     }
-
     this.log(colors.green('\nOptic is setup! Try running optic api:document'))
   }
 }
