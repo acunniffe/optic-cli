@@ -41,10 +41,12 @@ export function writeOpticYaml(config: any) {
   return fs.writeFileSync(opticYamlFileName, yaml.dump(config))
 }
 
-export function writeOutput(outputFileName: string, contents: string) {
+export function writeOutput(outputFileName: string, contents: string): string {
   const outputFolder = './.optic'
   if (!fs.existsSync(outputFolder)) {
     fs.mkdirSync(outputFolder)
   }
+  const outputFilePath = path.join(outputFolder, outputFileName)
   fs.writeFileSync(path.join(outputFolder, outputFileName), contents)
+  return outputFilePath
 }

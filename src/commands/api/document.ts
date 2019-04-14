@@ -1,18 +1,26 @@
 process.env.DEBUG = process.env.DEBUG ? `${process.env.DEBUG},optic:*` : 'optic:*'
 
-import {Command} from '@oclif/command'
+import {Command, flags} from '@oclif/command'
 import {SessionManager} from '@useoptic/core'
-import {ObservationsToGraph} from '@useoptic/core/build/src'
+import {CogentEngine, FileSystemReconciler, ObservationsToGraph} from '@useoptic/core/build/src'
+import {IFileSystemRendererFolder} from '@useoptic/core/build/src/cogent-core/react/file-system-renderer'
+import {ICogentArtifactIdentifier, ICogentEngineConfig} from '@useoptic/core/build/src/cogent-engines/cogent-engine'
 import {Observation} from '@useoptic/core/build/src/interactions-to-observations'
 import {IOpticYamlConfig, toSessionConfig} from '@useoptic/core/build/src/optic-config'
 import {IDocumentConfig} from '@useoptic/core/build/src/optic-config/document-config'
+import {IApiId} from '@useoptic/core/build/src/optic-config/regexes'
 import {ReportBuilder} from '@useoptic/core/build/src/report-builder'
 import {ISessionManagerOptions} from '@useoptic/core/build/src/session-manager'
 import {cli} from 'cli-ux'
+import * as fs from 'fs-extra'
+import * as path from 'path'
+import {defaultAPM} from '../../api-packages/api-package-manager'
+import {LocalResolver} from '../../api-packages/resolvers/local-resolver'
 
 import {parseOpticYaml, readOpticYaml, writeOutput} from '../../common/config'
 import {harToObservations} from '../../Har2Optic'
 import analytics from '../../services/analytics/segment'
+import {Callback} from './publish'
 
 interface IDocumentConfigWithHar extends IDocumentConfig {
   har: string
@@ -25,11 +33,14 @@ function usesHar(documentConfig: IDocumentConfig): documentConfig is IDocumentCo
 export default class ApiDocument extends Command {
   static description = 'document your API contract'
 
-  static flags = {}
+  static flags = {
+    generate: flags.string({required: false})
+  }
 
   static args = []
 
   async run() {
+    const {flags} = this.parse(ApiDocument)
     const config: IOpticYamlConfig = parseOpticYaml(readOpticYaml())
     if (!config.document) {
       return this.error('You must have a document field in your optic.yml to document an API https://docs.useoptic.com')
@@ -82,6 +93,52 @@ export default class ApiDocument extends Command {
     // writeOutput('graphviz.txt', observationsToGraph.graph.toGraphViz())
 
     cli.action.stop()
+
+    //enforce oas only for now
+    if (flags.generate === 'oas') {
+      const localResolver = (defaultAPM.localResolver() as LocalResolver)
+      const {snapshot} = await localResolver.observationsToGraph(allObservations)
+      this.generateOas(snapshot, config.document)
+    }
     cli.log('Your API has now been documented! Next you might want to run optic api:publish')
+  }
+  generateOas(snapshot: any, config: IDocumentConfig) {
+    analytics.track('Generated Swagger')
+    cli.action.start('Generating OAS Spec')
+    const baseOutputDirectory = path.resolve('./.optic/oas')
+    fs.ensureDirSync(baseOutputDirectory)
+    fs.emptyDirSync(baseOutputDirectory)
+    const callback: Callback<IFileSystemRendererFolder> = (error, result) => {
+      if (error) {
+        return this.error(error.message)
+      }
+      if (result) {
+        const reconciler = new FileSystemReconciler()
+        reconciler.emit(result, cogentConfig.options)
+        cli.action.stop('Done! OAS Spec written to .optic/oas')
+      }
+    }
+    const api = config.api
+    const artifact: ICogentArtifactIdentifier = {
+      id: 'oas',
+      version: ''
+    }
+    const cogentConfig: ICogentEngineConfig = {
+      data: {
+        apiSnapshot: snapshot,
+      },
+      options: {
+        outputDirectory: baseOutputDirectory,
+        api: {
+          id: (api.org) ? `${api.org}/${api.id}` : api.id,
+          version: config.version || '',
+        },
+        artifact,
+      },
+      callback,
+    }
+
+    const engine = new CogentEngine()
+    engine.run(cogentConfig)
   }
 }
