@@ -85,7 +85,7 @@
     "get-version": "cp package.json ./src/package.json",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
-    "prepack": "npm run get-version && rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "rm tsconfig.buildinfo || true && npm run get-version && rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "ANALYTICS_IMPL=null nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
   },
