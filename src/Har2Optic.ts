@@ -34,15 +34,23 @@ function decodeRequestBody(postData: PostData) {
   if (mimeType === 'application/json' || mimeType === 'text/plain') {
     try {
       return JSON.parse(text)
-    } catch {}
+    } catch {
+    }
   }
   return text
 }
 
 function decodeResponseBody(responseContent: Content) {
   const {size, mimeType, text = ''} = responseContent
-  if (mimeType === 'application/json') {
-    return size === 0 ? null : JSON.parse(text)
+  if (mimeType === 'application/json' || mimeType === 'text/plain') {
+    if (size === 0) {
+      return null
+    }
+    try {
+      return JSON.parse(text)
+    } catch {
+      console.log('could not parse', text)
+    }
   }
   return text
 }
@@ -54,6 +62,9 @@ function normalizeHeaders(headers: Header[]): Header[] {
 export function toApiInteraction(entry: Entry): IApiInteraction {
   const parsedUrl = url.parse(entry.request.url, true)
   const cookies = nameAndValueListToObject(entry.request.cookies)
+  if (entry.response.content) {
+    console.log(entry.request.url)
+  }
   return {
     request: {
       url: parsedUrl.pathname || '/',
