@@ -4,7 +4,7 @@ import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import analytics from '../../services/analytics/segment'
 import {IOpticApiSnapshotRequest} from '../../services/optic'
 import * as path from 'path'
-import * as pJson from '../../../package.json'
+import * as pJson from '../../package.json'
 
 export default class ApiPublish extends Command {
   static description = 'publish your API contract locally'
