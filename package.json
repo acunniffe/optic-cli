@@ -1,7 +1,7 @@
 {
   "name": "@useoptic/cli",
   "description": "API automation for the modern team",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "author": "@useoptic",
   "bin": {
     "optic": "./bin/run"
