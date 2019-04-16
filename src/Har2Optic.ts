@@ -62,9 +62,6 @@ function normalizeHeaders(headers: Header[]): Header[] {
 export function toApiInteraction(entry: Entry): IApiInteraction {
   const parsedUrl = url.parse(entry.request.url, true)
   const cookies = nameAndValueListToObject(entry.request.cookies)
-  if (entry.response.content) {
-    console.log(entry.request.url)
-  }
   return {
     request: {
       url: parsedUrl.pathname || '/',
