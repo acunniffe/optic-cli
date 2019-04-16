@@ -11,7 +11,7 @@
     "@oclif/command": "^1.5.10",
     "@oclif/config": "^1.12.6",
     "@oclif/plugin-help": "^2.1.6",
-    "@useoptic/core": "^0.1.5-alpha.22",
+    "@useoptic/core": "^0.1.5-alpha.23",
     "analytics-node": "^3.3.0",
     "archy": "^1.0.0",
     "cli-ux": "^5.1.0",
