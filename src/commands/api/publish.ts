@@ -4,7 +4,7 @@ import {cli} from 'cli-ux'
 import * as gitState from 'git-state'
 import * as path from 'path'
 
-import * as pJson from '../../package.json'
+import * as pJson from '../../static/package.json'
 import {defaultAPM} from '../../api-packages/api-package-manager'
 import {parseOpticYaml, readOpticYaml} from '../../common/config'
 import {Credentials} from '../../common/credentials'

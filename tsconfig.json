@@ -11,7 +11,9 @@
     "composite": true
   },
   "include": [
-    "src/**/*",
-    "src/package.json"
+    "src/**/*"
+  ],
+  "files": [
+    "src/static/package.json"
   ]
 }
