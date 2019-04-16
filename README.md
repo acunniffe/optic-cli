@@ -19,7 +19,7 @@ $ npm install -g @useoptic/cli
 $ optic COMMAND
 running command...
 $ optic (-v|--version|version)
-@useoptic/cli/3.2.4 darwin-x64 node-v8.12.0
+@useoptic/cli/3.2.5 darwin-x64 node-v8.12.0
 $ optic --help [COMMAND]
 USAGE
   $ optic COMMAND
@@ -58,7 +58,7 @@ OPTIONS
   -v, --version=version    [default: latest] API version to consume, defaults to "latest"
 ```
 
-_See code: [src/commands/api/add.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/api/add.ts)_
+_See code: [src/commands/api/add.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/api/add.ts)_
 
 ## `optic api:document`
 
@@ -72,7 +72,7 @@ OPTIONS
   --generate=generate
 ```
 
-_See code: [src/commands/api/document.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/api/document.ts)_
+_See code: [src/commands/api/document.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/api/document.ts)_
 
 ## `optic api:install`
 
@@ -83,7 +83,7 @@ USAGE
   $ optic api:install
 ```
 
-_See code: [src/commands/api/install.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/api/install.ts)_
+_See code: [src/commands/api/install.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/api/install.ts)_
 
 ## `optic api:publish`
 
@@ -97,7 +97,7 @@ OPTIONS
   -d, --draft
 ```
 
-_See code: [src/commands/api/publish.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/api/publish.ts)_
+_See code: [src/commands/api/publish.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/api/publish.ts)_
 
 ## `optic api:publishLocal`
 
@@ -108,7 +108,7 @@ USAGE
   $ optic api:publishLocal
 ```
 
-_See code: [src/commands/api/publishLocal.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/api/publishLocal.ts)_
+_See code: [src/commands/api/publishLocal.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/api/publishLocal.ts)_
 
 ## `optic api:update`
 
@@ -119,7 +119,7 @@ USAGE
   $ optic api:update
 ```
 
-_See code: [src/commands/api/update.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/api/update.ts)_
+_See code: [src/commands/api/update.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/api/update.ts)_
 
 ## `optic auth:login`
 
@@ -133,7 +133,7 @@ OPTIONS
   --host=host
 ```
 
-_See code: [src/commands/auth/login.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/auth/login.ts)_
+_See code: [src/commands/auth/login.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/auth/login.ts)_
 
 ## `optic auth:logout`
 
@@ -147,7 +147,7 @@ OPTIONS
   --host=host
 ```
 
-_See code: [src/commands/auth/logout.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/auth/logout.ts)_
+_See code: [src/commands/auth/logout.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/auth/logout.ts)_
 
 ## `optic config:check`
 
@@ -158,7 +158,7 @@ USAGE
   $ optic config:check
 ```
 
-_See code: [src/commands/config/check.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/config/check.ts)_
+_See code: [src/commands/config/check.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/config/check.ts)_
 
 ## `optic help [COMMAND]`
 
@@ -190,7 +190,7 @@ OPTIONS
   --verify-tests
 ```
 
-_See code: [src/commands/setup/init.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/setup/init.ts)_
+_See code: [src/commands/setup/init.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/setup/init.ts)_
 
 ## `optic setup:paths [TESTCMD]`
 
@@ -204,7 +204,7 @@ ARGUMENTS
   TESTCMD  the command that runs your tests
 ```
 
-_See code: [src/commands/setup/paths.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/setup/paths.ts)_
+_See code: [src/commands/setup/paths.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/setup/paths.ts)_
 
 ## `optic setup:tests [TESTCMD]`
 
@@ -218,5 +218,5 @@ ARGUMENTS
   TESTCMD  the command that runs your tests
 ```
 
-_See code: [src/commands/setup/tests.ts](https://github.com/opticdev/optic-cli/blob/v3.2.4/src/commands/setup/tests.ts)_
+_See code: [src/commands/setup/tests.ts](https://github.com/opticdev/optic-cli/blob/v3.2.5/src/commands/setup/tests.ts)_
 <!-- commandsstop -->
