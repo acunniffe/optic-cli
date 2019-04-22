@@ -17,7 +17,16 @@ export class TokenListenerService {
         fp(this.randomPort(), (_: any, responsePort: number) => {
           resolve({tokenPromise, responsePort})
           this.app.get('/token/:token', (req: express.Request, res: express.Response) => {
-            res.sendFile('complete-with.html', {root: __dirname})
+            res.send(`<!DOCTYPE html>
+<html lang="en">
+<body>
+Logged into Optic CLI -- you can close this page at any time
+</body>
+<script type="text/javascript">
+  window.close()
+</script>
+</html>
+`)
             tokenResolve(req.params.token)
           })
 
