@@ -15,6 +15,9 @@ class Credentials {
   }
 
   get() {
+    if (process.env.OPTIC_WRITE_TOKEN) {
+      return process.env.OPTIC_WRITE_TOKEN
+    }
     return keytar.getPassword(serviceName, this.accountName)
   }
 
