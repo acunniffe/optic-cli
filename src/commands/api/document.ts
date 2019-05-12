@@ -1,14 +1,12 @@
 process.env.DEBUG = process.env.DEBUG ? `${process.env.DEBUG},optic:*` : 'optic:*'
 
 import {Command, flags} from '@oclif/command'
-import {SessionManager} from '@useoptic/core'
-import {CogentEngine, FileSystemReconciler, ObservationsToGraph} from '@useoptic/core/build/src'
+import {SessionManager, CogentEngine, FileSystemReconciler, ObservationsToGraphBuilder} from '@useoptic/core'
 import {IFileSystemRendererFolder} from '@useoptic/core/build/src/cogent-core/react/file-system-renderer'
 import {ICogentArtifactIdentifier, ICogentEngineConfig} from '@useoptic/core/build/src/cogent-engines/cogent-engine'
 import {Observation} from '@useoptic/core/build/src/interactions-to-observations'
 import {IOpticYamlConfig, toSessionConfig} from '@useoptic/core/build/src/optic-config'
 import {IDocumentConfig} from '@useoptic/core/build/src/optic-config/document-config'
-import {IApiId} from '@useoptic/core/build/src/optic-config/regexes'
 import {ReportBuilder} from '@useoptic/core/build/src/report-builder'
 import {ISessionManagerOptions} from '@useoptic/core/build/src/session-manager'
 import {cli} from 'cli-ux'
@@ -18,7 +16,7 @@ import {defaultAPM} from '../../api-packages/api-package-manager'
 import {LocalResolver} from '../../api-packages/resolvers/local-resolver'
 
 import {parseOpticYaml, readOpticYaml, writeOutput} from '../../common/config'
-import {harToObservations} from '../../Har2Optic'
+import {harToObservations} from '../../common/har-utilities'
 import analytics from '../../services/analytics/segment'
 import {Callback} from './publish'
 
@@ -87,7 +85,7 @@ export default class ApiDocument extends Command {
 
     writeOutput('observations.json', JSON.stringify(allObservations, null, 2))
 
-    const observationsToGraph = new ObservationsToGraph()
+    const observationsToGraph = ObservationsToGraphBuilder.fromEmptyGraph()
     observationsToGraph.interpretObservations(allObservations)
 
     // writeOutput('graphviz.txt', observationsToGraph.graph.toGraphViz())
@@ -102,6 +100,7 @@ export default class ApiDocument extends Command {
     }
     cli.log('Your API has now been documented! Next you might want to run optic api:publish')
   }
+
   generateOas(snapshot: any, config: IDocumentConfig) {
     analytics.track('Generated Swagger')
     cli.action.start('Generating OAS Spec')

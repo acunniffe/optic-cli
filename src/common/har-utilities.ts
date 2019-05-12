@@ -20,6 +20,23 @@ export function harToObservations(harFilePath: string, config: IDocumentConfig):
   return observations
 }
 
+export function harToHostsAndInteractions(harFilePath: string) {
+  const harJson: Har = readJsonSync(harFilePath)
+  const samplesByHost = harJson.log.entries.reduce((interactionsByHost, entry: Entry) => {
+    const host = url.parse(entry.request.url).host || ''
+    const interaction = toApiInteraction(entry)
+    const list = interactionsByHost.get(host) || []
+    list.push(interaction)
+    interactionsByHost.set(host, list)
+    return interactionsByHost
+  }, new Map<string, IApiInteraction[]>())
+  const hosts = [...samplesByHost.keys()].sort()
+  return {
+    hosts,
+    samplesByHost
+  }
+}
+
 function nameAndValueListToObject(nameAndValueList: { name: string, value: string }[]) {
   const object: { [key: string]: string } = {}
   return nameAndValueList.reduce((acc, {name, value}) => {
