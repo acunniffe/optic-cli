@@ -1,5 +1,6 @@
 import {Command} from '@oclif/command'
 import {InteractionsToObservations, ObservationsToGraphBuilder} from '@useoptic/core/build/src'
+import {DiffingGraph} from '@useoptic/core/build/src/diffing-graph'
 import {Graph} from '@useoptic/core/build/src/graph/graph'
 import {cli} from 'cli-ux'
 import {IApiInteraction, pathToMatcher} from '@useoptic/core/build/src/common'
@@ -12,10 +13,11 @@ import {CommandSession} from '@useoptic/core/build/src/sessions/command-session'
 import {ProxyCaptureSession} from '@useoptic/core/build/src/sessions/proxy-capture-session'
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
+import * as fs from 'fs-extra'
 
 export default class Capture extends Command {
   private sessions: ICaptureSessionResultWithMetadata[] = []
-  private currentSession: ICaptureSessionState = {samples: [], graph: new Graph()}
+  private currentSession: ICaptureSessionState | null = null
   private paths: string[] = []
 
   static description = 'Capture traffic to generate an API specification'
@@ -28,21 +30,7 @@ export default class Capture extends Command {
     analytics.track('Capture Session Starting')
 
     const config = {
-      paths: [
-        '/api/refreshToken',
-        '/api/user',
-        '/api/user/referralStatus',
-        '/boot/cms/1/plan/recipes',
-        '/boot/cms/1/plans',
-        '/boot/cms/1/plans/:planSlug/recommendations',
-        '/boot/config',
-        '/ecommerce/v2/users/:userId/carts',
-        //'/ecommerce/v2/users/:userId/carts/:cartId',
-        '/ecommerce/v2/users/:userId/subscriptions',
-        '/log/click',
-        '/log/view',
-        '/log/yourPlanPage',
-      ],
+      paths: [],
       port: 9000
     }
 
@@ -52,9 +40,9 @@ export default class Capture extends Command {
 
     serverEvents.on('pathsChanged', this.handlePathsChanged.bind(this))
 
-    await this.loop(config)
+    cli.open(`http://localhost:${config.port}`)
 
-    require('fs').writeFileSync('capture.json', JSON.stringify({sessions: this.sessions, paths: this.paths}, null, 2))
+    await this.loop(config)
 
     await this.generateReport(this.sessions)
   }
@@ -72,17 +60,12 @@ export default class Capture extends Command {
       {
         type: 'har',
         handler: () => this.runHarSession()
-      },
-      {
-        type: 'replay', handler: () => {
-          this.warn('unimplemented :(')
-        }
       }
     ]
 
     const optionsString = options
       .map((option, index) => {
-        return `${index + 1}. ${option.type}`
+        return ` ${index + 1}. ${option.type}`
       })
       .join('\n')
 
@@ -91,9 +74,17 @@ export default class Capture extends Command {
 How do you want to capture your API?
 ${optionsString}
 
-If you are done capturing, enter "done"`, {required: true})
+ - If you want to resume your last session, enter "resume"
+ - If you are done capturing, enter "done"
+
+Enter your choice`, {required: true})
       if (choice === 'done') {
         break
+      }
+
+      if (choice === 'resume') {
+        this.resumeSession()
+        continue
       }
 
       const number = parseInt(choice, 10)
@@ -105,10 +96,11 @@ If you are done capturing, enter "done"`, {required: true})
           cli.log(`${session.samples.length} API interactions observed`)
           const shouldSave = await cli.confirm('Do you want to save this capture session?')
           if (shouldSave) {
-            this.sessions.push({
+            this.addSession({
               type: chosenOption.type,
               result: session,
             })
+            this.currentSession = null
           }
         } catch (e) {
           cli.warn(e)
@@ -116,6 +108,28 @@ If you are done capturing, enter "done"`, {required: true})
       } else {
         cli.warn('Please enter the number of your chosen option')
       }
+    }
+  }
+
+  addSession(session: ICaptureSessionResultWithMetadata) {
+    this.sessions.push(session)
+    this.persistSessions()
+  }
+
+  persistSessions() {
+    fs.writeJsonSync('capture.json', {sessions: this.sessions, paths: this.paths})
+  }
+
+  resumeSession() {
+    cli.action.start('Resuming from last time')
+    try {
+      const {sessions, paths} = fs.readJsonSync('capture.json')
+      this.sessions = sessions
+      this.paths = paths
+    } catch (e) {
+      this.warn(e)
+    } finally {
+      cli.action.stop()
     }
   }
 
@@ -202,29 +216,33 @@ ${hostsString}`)
     }
   }
 
-  async refinePaths(originalPaths: string[], samples: IApiInteraction[]) {
-
-    /*let paths = [...originalPaths]
-    let pathMatchers = paths.map(pathToMatcher)
-    for (const sample of samples) {
-      const {url} = sample.request
-      while (!pathMatchers.some(matcher => matcher.regexp.test(url))) {
-        cli.log(`The request URL did not match any paths: "${url}"`)
-        const path = await cli.prompt('What path should this URL match?')
-        paths = [...new Set(paths).add(path)]
-        pathMatchers = paths.map(pathToMatcher)
-      }
-    }
-    this.log('paths:')
-    this.log(paths.map(x => ` - ${x}`).join('\n'))
-    return paths
-    */
-    return originalPaths
-  }
-
   async generateReport(sessions: ICaptureSessionResultWithMetadata[]) {
     this.log('generating report')
     return {}
+  }
+
+  getDiff(diffingGraph: DiffingGraph) {
+    const {uncoveredNodeIds, coveredNodeIds, newNodeIds} = diffingGraph
+    return {
+      uncoveredNodes: [...uncoveredNodeIds].map(x => {
+        const node = diffingGraph.nodes.get(x)
+        if (node) {
+          return {node, nameKey: node.value.hashCode()}
+        }
+      }),
+      coveredNodes: [...coveredNodeIds].map(x => {
+        const node = diffingGraph.nodes.get(x)
+        if (node) {
+          return {node, nameKey: node.value.hashCode()}
+        }
+      }),
+      newNodes: [...newNodeIds].map(x => {
+        const node = diffingGraph.nodes.get(x)
+        if (node) {
+          return {node, nameKey: node.value.hashCode()}
+        }
+      })
+    }
   }
 
   async startServer(port: number) {
@@ -239,16 +257,19 @@ ${hostsString}`)
       res.status(204).end()
     })
     apiRouter.get('/sessions', async (req, res) => {
+      const allSessionsGraph = this.getGraphForAllSessions()
       const promises = this.sessions.map(session => {
-        const promise = this.samplesToGraph(session.result.samples, this.paths).toGql()
-        return promise.then((gql) => {
+        const diffingGraph = this.samplesToDiff(session.result.samples, this.paths, allSessionsGraph)
+        const promise = diffingGraph.toGql()
+        return promise.then(gql => {
           return {
             ...session,
-            gql
+            gql,
+            diff: this.getDiff(diffingGraph)
           }
         })
       })
-      Promise.all(promises).then((sessions) => {
+      Promise.all(promises).then(sessions => {
         res.json({
           sessions
         })
@@ -263,13 +284,15 @@ ${hostsString}`)
       if (!this.currentSession) {
         return res.status(404).end()
       }
-
-      const promise = this.currentSession.graph.toGql()
-      promise.then((gql) => {
+      const allSessionsGraph = this.getGraphForAllSessions()
+      const diffingGraph = this.samplesToDiff(this.currentSession.samples, this.paths, allSessionsGraph)
+      const promise = diffingGraph.toGql()
+      promise.then(gql => {
         res.json({
           session: {
             ...this.currentSession,
-            gql
+            gql,
+            diff: this.getDiff(diffingGraph)
           }
         })
       })
@@ -283,6 +306,14 @@ ${hostsString}`)
     return serverEvents
   }
 
+  getGraphForAllSessions() {
+    const samples = this.sessions.map(x => x.result.samples).reduce((acc, values) => [...acc, ...values], [])
+    if (this.currentSession) {
+      samples.push(...this.currentSession.samples)
+    }
+    return this.samplesToGraph(samples, this.paths)
+  }
+
   initCaptureSession() {
     const observationsToGraph = ObservationsToGraphBuilder.fromEmptyGraph()
 
@@ -293,9 +324,12 @@ ${hostsString}`)
   }
 
   handleSample(sample: IApiInteraction) {
+    if (!this.currentSession) {
+      return
+    }
     const {graph, samples} = this.currentSession
     samples.push(sample)
-    cli.action.status = `${samples.length} interactions observed`
+    cli.action.start(`Observing API interactions (${samples.length} interactions observed)`)
     const observations = InteractionsToObservations.getObservationsForInteraction(sample, {pathMatcherList: this.paths.map(pathToMatcher)})
     const observationsToGraph = ObservationsToGraphBuilder.fromExistingGraph(graph)
     observationsToGraph.interpretObservations(observations)
@@ -303,6 +337,10 @@ ${hostsString}`)
 
   handlePathsChanged({paths}: { paths: string[] }) {
     this.paths = paths
+    this.persistSessions()
+    if (!this.currentSession) {
+      return
+    }
     const {samples} = this.currentSession
     this.currentSession.graph = this.samplesToGraph(samples, paths)
   }
@@ -311,8 +349,15 @@ ${hostsString}`)
     const observations = InteractionsToObservations.getObservations(samples, {pathMatcherList: paths.map(pathToMatcher)})
     const observationsToGraph = ObservationsToGraphBuilder.fromEmptyGraph()
     observationsToGraph.interpretObservations(observations)
-    console.log(observationsToGraph.graph)
     return observationsToGraph.graph
+  }
+
+  samplesToDiff(samples: IApiInteraction[], paths: string[], baseGraph: Graph) {
+    const diffingGraph = new DiffingGraph(baseGraph)
+    const observations = InteractionsToObservations.getObservations(samples, {pathMatcherList: paths.map(pathToMatcher)})
+    const observationsToGraph = ObservationsToGraphBuilder.fromExistingGraph(diffingGraph)
+    observationsToGraph.interpretObservations(observations)
+    return diffingGraph
   }
 }
 
