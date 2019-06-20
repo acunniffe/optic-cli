@@ -1,8 +1,0 @@
-{
-  "name": "api-js-client",
-  "version": "0.1.0",
-  "dependencies": {
-    "unirest": "^0.6.0"
-  },
-  "main": "src/Client.js"
-}
